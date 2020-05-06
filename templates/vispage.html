@@ -1,4 +1,4 @@
-<!-- <!doctype html> -->
+<!doctype html>
 <title>Eye Tracking Visualization</title>
 <h1>Group 12BC Eye Tracking Visualization Tool</h1>
 <meta charset="utf-8">
@@ -24,35 +24,12 @@
 	<a href="{{ url_for('index_vis3') }}">Visualization 3</a>
 	<a href="{{ url_for('index_vis4') }}">Visualization 4</a>
   </div>
+<h3>Welcome to Visualization {{ vis_page }}</h3>
 
-<p>
-	Welcome to Group 12BC's visualization of metro map eye data visualization. We hope you
-	will learn something new about your data. There are a few simple tools to help you get started.
-	Click upload to select and upload your data. From there some hokus pokus magic happens and you
-	see the data appear in front of you in the form of some graphs. From there feel free to look at
-	your data, change it, scale it, etc. It is your playground.
-</p>
-<h2>Select a file to upload</h2>
-<div>Please select a csv file with an accompanying picture to go along with, but upload them seperately</div>
-<p>
-	{% with messages = get_flashed_messages() %}
-	{% if messages %}
-	<ul class=flashes>
-		{% for message in messages %}
-		<li>{{ message }}</li>
-		{% endfor %}
-	</ul>
-	{% endif %}
-	{% endwith %}
-</p>
-<form method="post" action="/" enctype="multipart/form-data">
-	<dl>
-		<p>
-			<input type="file" name="file" autocomplete="off" required>
-		</p>
-	</dl>
-	<p>
-		<input type="submit" value="Submit">
-	</p>
+<div id='myplot' , class="myplotcss"> </div>
+	<script>fetch('/p1')
+			.then(function (response) { return response.json(); })
+			.then(function (item) { Bokeh.embed.embed_item(item); })
+	</script>
 </form>
 </html>

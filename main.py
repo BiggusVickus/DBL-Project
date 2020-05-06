@@ -4,12 +4,6 @@ import urllib.request
 from app import app
 from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
-# from bokeh.plotting import figure, output_file, show
-# from bokeh.embed import file_html
-# from bokeh.resources import CDN
-# import json
-# from bokeh.embed import json_item
-# from jinja2 import Template
 
 UPLOAD_FOLDER = './Uploads'
 
@@ -48,26 +42,61 @@ def upload_file():
 			flash('Allowed file types are csv, png, jpg, and jpeg')
 			return redirect(request.url)
 
-# @app.route('/p1')
-# def vis():
-# 	# select the tools we want
-# 	TOOLS="pan,wheel_zoom,box_zoom,reset,save"
+@app.route('/home', methods=['GET', 'POST'])
+def index_home():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('index'))
+	# show the form, it wasn't submitted
+	return render_template('index.html', )
 
-# 	# prepare some data
-# 	x = [1, 2, 3, 4, 5]
-# 	y = [6, 7, 2, 4, 5]
+@app.route('/vis1', methods=['GET', 'POST'])
+def index_vis1():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('vispage1'))
+	# show the form, it wasn't submitted
+	visualization = 1
+	return render_template('vispage.html', vis_page = visualization)
 
-# 	# output to static HTML file
-# 	output_file("whatever.html")
+@app.route('/vis2', methods=['GET', 'POST'])
+def index_vis2():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('vispage'))
+	# show the form, it wasn't submitted
+	visualization = 2
+	return render_template('vispage.html', vis_page = visualization)
 
-# 	# create a new plot with a title and axis labels
-# 	p = figure(title="simple line example", x_axis_label='x', y_axis_label='y' , tools=TOOLS, plot_width=300, plot_height=300)
+@app.route('/vis3', methods=['GET', 'POST'])
+def index_vis3():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('vispage'))
+	# show the form, it wasn't submitted
+	visualization = 3
+	return render_template('vispage.html', vis_page = visualization)
 
-# 	# add a line renderer with legend and line thickness
-# 	p.line(x, y, line_width=2)
+@app.route('/vis4', methods=['GET', 'POST'])
+def index_vis4():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('vispage'))
+	visualization = 4
+	# show the form, it wasn't submitted
 
-# 	# show the results
-# 	return json.dumps(json_item(p, "myplot"))
+	return render_template('vispage.html', vis_page = visualization)
+
 
 
 if __name__ == "__main__":
