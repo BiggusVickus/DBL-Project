@@ -4,15 +4,8 @@ import urllib.request
 from app import app
 from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
-# from bokeh.plotting import figure, output_file, show
-# from bokeh.embed import file_html
-# from bokeh.resources import CDN
-# import json
-# from bokeh.embed import json_item
-# from jinja2 import Template
 
 UPLOAD_FOLDER = './Uploads'
-
 app = Flask(__name__)
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -48,26 +41,65 @@ def upload_file():
 			flash('Allowed file types are csv, png, jpg, and jpeg')
 			return redirect(request.url)
 
-# @app.route('/p1')
-# def vis():
-# 	# select the tools we want
-# 	TOOLS="pan,wheel_zoom,box_zoom,reset,save"
+@app.route('/home', methods=['GET', 'POST'])
+def index_home():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('index'))
+	# show the form, it wasn't submitted
+	return render_template('index.html')
 
-# 	# prepare some data
-# 	x = [1, 2, 3, 4, 5]
-# 	y = [6, 7, 2, 4, 5]
+@app.route('/vis1', methods=['GET', 'POST'])
+def index_vis1():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('vispage1'))
+	# show the form, it wasn't submitted
+	vis_page = 1
+	vis_text = 'The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'
+	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
 
-# 	# output to static HTML file
-# 	output_file("whatever.html")
+@app.route('/vis2', methods=['GET', 'POST'])
+def index_vis2():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('vispage'))
+	# show the form, it wasn't submitted
+	vis_page = 2
+	vis_text = 'The goal of this visualization is to show the user how the x and y poition changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
+	return render_template('vispage.html', vis_page = vis_page, vis_text = vis_text)
 
-# 	# create a new plot with a title and axis labels
-# 	p = figure(title="simple line example", x_axis_label='x', y_axis_label='y' , tools=TOOLS, plot_width=300, plot_height=300)
+@app.route('/vis3', methods=['GET', 'POST'])
+def index_vis3():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('vispage'))
+	# show the form, it wasn't submitted
+	vis_page = 3
+	vis_text = 'The idea behind this visualization is that the user can see a heatmap of a specific user, map, and map color. It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding.'
+	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
 
-# 	# add a line renderer with legend and line thickness
-# 	p.line(x, y, line_width=2)
+@app.route('/vis4', methods=['GET', 'POST'])
+def index_vis4():
+	if request.method == 'POST':
+		# do stuff when the form is submitted
+		# redirect to end the POST handling
+		# the redirect can be to the same route or somewhere else
+		return redirect(url_for('vispage'))
+	vis_page = 4
+	vis_text = 'The idea behind this visualization is that you can see....'
+	# show the form, it wasn't submitted
 
-# 	# show the results
-# 	return json.dumps(json_item(p, "myplot"))
+	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
+
 
 
 if __name__ == "__main__":

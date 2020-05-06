@@ -1,5 +1,5 @@
+#Dont touch anything here, otherwise everything breaks, especially the first 2 lines. 
 from flask import Flask
-
 UPLOAD_FOLDER = '/Upload_Folder'
 
 app = Flask(__name__)
