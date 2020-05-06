@@ -6,7 +6,6 @@ from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = './Uploads'
-
 app = Flask(__name__)
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
