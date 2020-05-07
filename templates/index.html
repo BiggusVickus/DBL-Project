@@ -20,14 +20,15 @@
 
 <div class="body">
 	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
+	<img src="{{image_for_background}}" alt={{image_for_background}}></img>
 	<p>
 		Welcome to Group 12BC's visualization of metro map eye data visualization. We hope you
 		will learn something new about your data. There are a few simple tools to help you get started.
-		Click upload to select and upload your data. From there some hokus pokus magic happens and you
-		see the data appear in front of you in the form of some graphs. From there feel free to look at
-		your data, change it, scale it, etc. It is your playground.
+		Click upload to select and upload your data. From there you can go to either Visualization 1, 2, 3, or 4. Feel
+		free to do what you like.
 	</p>
 	<h2>Select a file to upload</h2>
+
 	<div>Please select a csv file with an accompanying picture to go along with, but upload them seperately</div>
 	<p>
 		{% with messages = get_flashed_messages() %}
