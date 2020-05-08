@@ -3,7 +3,7 @@
 # import random
 # import time
 # #This randomly selects an image from /static/images to be put on the homepage
-# while True:
+# while cbnd bnx√≤ True:
 #     image_list = [name for name in glob.glob('static/images/*')]
 #     random_number = random.randint(0, len(image_list)-1)
 #     image_for_background = str(image_list[random_number])
