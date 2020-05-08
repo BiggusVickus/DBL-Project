@@ -17,14 +17,15 @@
 	<a href="{{ url_for('index_vis3') }}">Visualization 3</a>
 	<a href="{{ url_for('index_vis4') }}">Visualization 4</a>
 </div>
-
-<div class="body">
+<div class="main">
 	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
-	<img src="{{image_for_background}}" alt={{image_for_background}}></img>
+	<div class="image">
+		<img class="center-fit" src="{{image_for_background}}" alt={{image_for_background}}></img>
+	</div>
 	<p>
 		Welcome to Group 12BC's visualization of metro map eye data visualization. We hope you
 		will learn something new about your data. There are a few simple tools to help you get started.
-		Click upload to select and upload your data. From there you can go to either Visualization 1, 2, 3, or 4. Feel
+		Click upload below to select and upload your data and images. From there you can go to either Visualization 1, 2, 3, or 4 to analyze and graph your data. Feel
 		free to do what you like.
 	</p>
 	<h2>Select a file to upload</h2>
@@ -33,13 +34,13 @@
 	<p>
 		{% with messages = get_flashed_messages() %}
 		{% if messages %}
-		<ul class=flashes>
-			{% for message in messages %}
-			<li>{{ message }}</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-		{% endwith %}
+	<ul class=flashes>
+		{% for message in messages %}
+		<li>{{ message }}</li>
+		{% endfor %}
+	</ul>
+	{% endif %}
+	{% endwith %}
 	</p>
 	<form method="post" action="/" enctype="multipart/form-data">
 		<dl>
