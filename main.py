@@ -7,7 +7,7 @@ from app import app
 from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
 
-#DON"T TOUCH
+#DON'T TOUCH, app settings
 UPLOAD_FOLDER = 'static/Uploads'
 app = Flask(__name__)
 app.secret_key = "secret key"
@@ -24,8 +24,7 @@ def allowed_file(filename):
 @app.route('/')
 def upload_form():
 	image_list = [name for name in glob.glob('static/Stimuli/*[0-9]_*')]
-	random_number = random.randint(0, len(image_list)-1)
-	image_for_background = str(image_list[random_number])
+	image_for_background = str(image_list[random.randint(0, len(image_list)-1)])
 	return render_template('index.html', image_for_background = image_for_background)
 
 	#does the upload function, absolutely dont touch or else it breaks
@@ -94,6 +93,6 @@ def index_vis4():
 	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
 
 
-#starts the app in debug mode, hit refresh to see an updated page, all without restarting the server. 
+#starts the app in debug mode, hit refresh to see an updated page, all without restarting the server. If changing CSS stuff, do a hrd refresh with cmd+shift+r.
 if __name__ == "__main__":
 	app.run(debug=True)

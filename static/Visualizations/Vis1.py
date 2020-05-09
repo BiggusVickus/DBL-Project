@@ -1,6 +1,3 @@
-#import matplotlib as mlp
-#import matplotlib.pyplot as plt 
-#import seaborn as sns 
 import bokeh as bk 
 from bokeh.plotting import figure, show, curdoc
 from bokeh.io import output_file, output_notebook, show 
