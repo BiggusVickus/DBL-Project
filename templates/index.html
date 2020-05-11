@@ -17,39 +17,42 @@
 	<a href="{{ url_for('index_vis3') }}">Visualization 3</a>
 	<a href="{{ url_for('index_vis4') }}">Visualization 4</a>
 </div>
+<div class="main">
+	<div class="container">
+		<img class="center-fit" src="{{image_for_background}}" alt="{{image_for_background}}" style="width:100%"></img>
 
-<div class="body">
-	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
-	<p>
-		Welcome to Group 12BC's visualization of metro map eye data visualization. We hope you
-		will learn something new about your data. There are a few simple tools to help you get started.
-		Click upload to select and upload your data. From there some hokus pokus magic happens and you
-		see the data appear in front of you in the form of some graphs. From there feel free to look at
-		your data, change it, scale it, etc. It is your playground.
-	</p>
-	<h2>Select a file to upload</h2>
-	<div>Please select a csv file with an accompanying picture to go along with, but upload them seperately</div>
-	<p>
-		{% with messages = get_flashed_messages() %}
-		{% if messages %}
-		<ul class=flashes>
-			{% for message in messages %}
-			<li>{{ message }}</li>
-			{% endfor %}
-		</ul>
-		{% endif %}
-		{% endwith %}
-	</p>
-	<form method="post" action="/" enctype="multipart/form-data">
-		<dl>
-			<p>
-				<input type="file" name="file" autocomplete="off" required>
+		<div class="centered">
+			<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
+			<p class='paragraph'>
+				Welcome to Group 12BC's visualization of metro map eye data visualization. We hope you will learn something new about your data. There are a few simple tools to help you get started. Click upload below to select and upload your data and images. From there you can go to either Visualization 1, 2, 3, or 4 to analyze and graph your data. Feel free to do what you like. Everytime you refresh this page, a new colored metromap is radomly selected to display in the background. 
 			</p>
-		</dl>
-		<p>
-			<input type="submit" value="Submit">
-		</p>
-	</form>
+			<h2>Select a file to upload</h2>
+                
+			<div>Please select a csv file with an accompanying picture to go along with, but upload them seperately
+			</div>
+			<p>
+				{% with messages = get_flashed_messages() %}
+				{% if messages %}
+			<ul class=flashes>
+				{% for message in messages %}
+				<li>{{ message }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+			{% endwith %}
+			</p>
+			<form method="post" action="/" enctype="multipart/form-data">
+				<dl>
+					<p>
+						<input type="file" name="file" autocomplete="off" required>
+					</p>
+				</dl>
+				<p>
+					<input type="submit" value="Submit">
+				</p>
+			</form>
+		</div>
+	</div>
 </div>
 
 </html>

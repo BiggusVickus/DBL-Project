@@ -1,6 +1,3 @@
-#import matplotlib as mlp
-#import matplotlib.pyplot as plt 
-#import seaborn as sns 
 import bokeh as bk 
 from bokeh.plotting import figure, show, curdoc
 from bokeh.io import output_file, output_notebook, show 
@@ -9,13 +6,13 @@ from bokeh.layouts import row, column, gridplot, widgetbox
 from bokeh.models.widgets import Tabs, Panel
 
 import sqlite3 as sql
+import pandas as pd 
 import numpy as np
-import pandas as pd
 #output file to HTML
 #output_file('DBLvis1.html')
 
 #read csv file
-df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
+df_map = pd.read_csv('static/Uploads/fixation_data.csv', parse_dates=[0])
 
 #create ColumnDataSource
 source_city = ColumnDataSource(data = dict(x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))

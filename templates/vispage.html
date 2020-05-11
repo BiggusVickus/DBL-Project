@@ -11,7 +11,6 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/vispage.css') }}">
 <nav class="navbar navbar-inverse">
 	<div class="container-fluid"></div>
-	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
 </nav>
 <div class="sidenav">
 	<a href="{{ url_for('index_vis1') }}">Visualization 1</a>
@@ -19,7 +18,9 @@
 	<a href="{{ url_for('index_vis3') }}">Visualization 3</a>
 	<a href="{{ url_for('index_vis4') }}">Visualization 4</a>
 </div>
+<!-- The {{_}} takes in different inputs (see main.py, and the vis_page/vis_text are passed to the {{vis_page}} and {{vis_text}} based on what page you are on. Limits repetivity of code. -->
 <div class="main">
+	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
 	<h3>Welcome to Visualization {{ vis_page }}</h3>
 	<div>{{ vis_text }}</div>
 </div>
