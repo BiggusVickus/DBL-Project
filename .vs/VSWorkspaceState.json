@@ -7,10 +7,8 @@
     "\\templates",
     "\\venv",
     "\\Visualizations",
-    "\\Visualizations\\vis3",
-    "\\Visualizations\\vis3\\vis3",
     "\\__pycache__"
   ],
-  "SelectedNode": "\\static\\Uploads\\.DS_Store",
+  "SelectedNode": "\\Visualizations\\Vis3.py",
   "PreviewInSolutionExplorer": false
 }
