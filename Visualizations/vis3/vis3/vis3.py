@@ -20,7 +20,8 @@ from bokeh.models import ColumnDataSource, Grid, ImageURL, LinearAxis, Plot, Ran
 
 
 #Read the csv file
-df = pd.read_csv('fixation_data_edited.csv', parse_dates=[0])
+df = pd.read_csv('upload file', parse_dates=[0])
+#C:\Users\20190756\Documents\GitHub\DBL-Project\Visualizations\vis3\vis3\fixation_data_edited.csv
 stimulus = '01_Antwerpen_S1.jpg'
 df_copy = df[df['StimuliName'] == stimulus].reset_index().copy()
 
@@ -55,6 +56,7 @@ for index, row in df_copy.iterrows(): #Iterates every row one by one
 ########   GRAPHING STARTS    ########
 ######################################
 ######################################
+###################################################
 
 
 #Group points with certain closeness rates in different data frames
@@ -94,6 +96,11 @@ p.circle(df8['MappedFixationPointX'], df4['MappedFixationPointY'], size=10, colo
 
 #Show results
 show(p)
+
+
+
+
+#DON'T DELETE - Notes to program the dropdown menu:
 
 #dropwdown = ['hello', 'goodbye', ...]
 #x = select.dropwdown
