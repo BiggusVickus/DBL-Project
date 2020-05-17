@@ -15,11 +15,13 @@ from bokeh.models import ColumnDataSource, Grid, ImageURL, LinearAxis, Plot, Ran
 
 
 #Read the csv file
-df = pd.read_csv('change this', parse_dates=[0])
+df = pd.read_csv('static/Uploads/fixation_data.csv', parse_dates=[0]) #read the input data into a dataframe
 stimulus = '01_Antwerpen_S1.jpg'
-df_copy = df[df['StimuliName'] == stimulus].reset_index().copy()
+df_copy = df[df['StimuliName'] == stimulus].reset_index().copy() #only the rows containing the stimuli map is copied into a new dataframe
 
-df_copy['closeness'] = 0
+length = len(df_copy.index) #number of rows in the dataframe is calculated
+list_closeness = [0] * length #A list is created such that: number of 0s = number of rows
+df_copy['closeness'] = list_closeness #the list is added to the dataframe as a new column named "closeness" and only contains 0s
 
 close = 15
 

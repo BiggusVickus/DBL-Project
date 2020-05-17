@@ -3,12 +3,10 @@
     "",
     "\\static",
     "\\static\\Uploads",
-    "\\static\\Visualizations",
     "\\templates",
     "\\venv",
-    "\\Visualizations",
     "\\__pycache__"
   ],
-  "SelectedNode": "\\Visualizations\\Vis3.py",
+  "SelectedNode": "\\static\\Uploads\\.DS_Store",
   "PreviewInSolutionExplorer": false
 }
