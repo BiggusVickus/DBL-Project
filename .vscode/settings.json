@@ -1,6 +1,10 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "python.pythonPath": "/Users/victorpiaskowski/anaconda3/bin/python",
+=======
+    "python.pythonPath": "C:\\ProgramData\\Anaconda3\\python.exe",
+>>>>>>> Stashed changes
 =======
     "python.pythonPath": "C:\\ProgramData\\Anaconda3\\python.exe",
 >>>>>>> Stashed changes

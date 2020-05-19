@@ -4,6 +4,23 @@ import urllib.request
 from app import app
 from flask import Flask, flash, request, redirect, render_template
 from werkzeug.utils import secure_filename
+from threading import Thread
+from tornado.ioloop import IOLoop
+from bokeh.embed import server_document
+import numpy as np  # import auxiliary library, typical idiom
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from bokeh.layouts import gridplot
+from bokeh.plotting import figure, output_file, show, curdoc
+from bokeh.io import output_file, show
+from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, Slider
+from bokeh.layouts import column, row, WidgetBox, layout
+from bokeh.models.callbacks import CustomJS
+from PIL import Image
+from bokeh.server.server import Server
+from bokeh.themes import Theme
+from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 
 UPLOAD_FOLDER = './Uploads'
 app = Flask(__name__)
@@ -72,8 +89,96 @@ def index_vis2():
 		return redirect(url_for('vispage'))
 	# show the form, it wasn't submitted
 	vis_page = 2
-	vis_text = 'The goal of this visualization is to show the user how the x and y poition changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
-	return render_template('vispage.html', vis_page = vis_page, vis_text = vis_text)
+	vis_text = 'The goal of this visualization is to show the user how the x and y position changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
+	script = server_document('http://127.0.0.1:5006/Vis2')
+	return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
+
+def Vis2(doc):
+    #load dataset
+    df_paths = pd.read_csv('dataset/fixation_data.csv', parse_dates=[0])
+    df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
+
+    #Global Variables
+    users = []
+    stations = []
+
+    src = ColumnDataSource(data = dict(x=[], y=[], timestamp=[], station=[], user=[]))
+
+    #Choosing the data we want
+    def make_dataset():
+        plot_data = df_paths[(df_paths['StimuliName'] == selectStation.value) & (df_paths['user'] == selectUser.value)].copy()
+        return plot_data
+
+    #making the plot
+    def make_plot(src):
+        #Writing X-path
+        p1 = figure(title="X path", plot_width = 400, plot_height = 400)
+        p1.grid.grid_line_alpha=0.3
+        p1.xaxis.axis_label = 'X'
+        p1.yaxis.axis_label = 'Time'
+        p1.y_range.flipped = True
+        p1.line(x='x', y='timestamp', source = src)
+
+        #Writing Y-path
+        p2 = figure(title= "Y path", plot_width = 400, plot_height = 400)
+        p2.grid.grid_line_alpha=0.3
+        p2.xaxis.axis_label = 'Time'
+        p2.yaxis.axis_label = 'Y'
+        p2.line(x='timestamp', y='y', source = src)
+        
+        #writing general path
+        p3 = figure(title="General Path", plot_width = 400, plot_height = 400)
+        p3.grid.grid_line_alpha=0.3
+        p3.xaxis.axis_label = 'X'
+        p3.yaxis.axis_label = 'Y'
+        p3.line(x='x', y='y', source = src)
+        return [p1, p2, p3]
+
+    #Select
+    for station in df_paths['StimuliName']:
+        stations.append(station)
+    for person in df_paths['user']:
+        users.append(person)
+    #to remove duplicates
+    stations = list(dict.fromkeys(stations))
+    users = list(dict.fromkeys(users))
+
+    selectStation = Select(title="Station:", value = '03_Bordeaux_S1.jpg', options=stations)
+    selectUser = Select(title='User:', value='p1', options=users)
+
+    #Update
+    def update():
+        new_src = make_dataset()
+        src.data = dict(
+            x=new_src['MappedFixationPointX'],
+            y=new_src['MappedFixationPointY'],
+            timestamp=new_src['Timestamp'],
+            station=new_src['StimuliName'],
+            user=new_src['user'],
+        )
+
+    selectStation.on_change('value', lambda attr, old, new: update())
+    selectUser.on_change('value', lambda attr, old, new: update())
+    selections = [selectStation, selectUser]
+
+    plot = make_plot(src)
+
+    widgets = column(*selections, width = 320, height = 200)
+    overlay = layout([
+                    [plot[2], plot[1], widgets],
+                    plot[0]])
+    update()
+
+    doc.add_root(overlay)
+
+def bk_worker():
+    # Can't pass num_procs > 1 in this configuration. If you need to run multiple
+    # processes, see e.g. flask_gunicorn_embed.py
+    server = Server({'/Vis2': Vis2}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:5006"])
+    server.start()
+    server.io_loop.start()
+
+Thread(target=bk_worker).start()
 
 @app.route('/vis3', methods=['GET', 'POST'])
 def index_vis3():
@@ -103,4 +208,4 @@ def index_vis4():
 
 
 if __name__ == "__main__":
-	app.run(debug=True)
+	app.run(port=5006, debug=True)
