@@ -70,6 +70,88 @@ def index_home():
 	# show the form, it wasn't submitted
 	return render_template('index.html')
 
+def Vis1(doc):
+    #read csv file
+    df_map = pd.read_csv('Visualizations/fixation_data.csv', parse_dates=[0])
+
+    #create ColumnDataSource
+    source_city = ColumnDataSource(data = dict(x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
+
+    #Global variables
+    stations = []
+    users = []
+
+    #create city select widget
+    for station in df_map['StimuliName']:
+        stations.append(station)
+    #to remove duplicates
+    stations = list(dict.fromkeys(stations))
+
+    select_city = Select(
+        title = 'Choose city', 
+        value = '01_Antwerpen_S1.jpg', 
+        options = stations
+    )
+
+    #create user select widget
+    for user in df_map['user']:
+        users.append(user)
+    users = list(dict.fromkeys(users))
+
+    select_user = Select(
+        title = 'Choose user',
+        value = 'p1',
+        options = users
+    )
+
+    #create figure and graph (scanpath)
+    def make_plot(src):
+        fig = figure(
+            title='Scanpath', 
+            plot_width = 900, 
+            plot_height = 600, 
+            x_range = (0, 1900), 
+            y_range = (0, 1200)
+        )
+        fig.line(x = 'x', y = 'y', source=source_city)
+        fig.circle(
+            x='x',
+            y='y', 
+            size = 'fixation_duration', 
+            alpha = 0.5,
+            source = source_city
+        )
+        return fig
+
+    def make_dataset():
+        plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
+        return plot_data
+
+    def update():
+        new_src = make_dataset()
+        source_city.data = dict(
+            x=new_src['MappedFixationPointX'],
+            y=new_src['MappedFixationPointY'],
+            timestamp=new_src['Timestamp'],
+            station=new_src['StimuliName'],
+            user=new_src['user'],
+            fixation_duration=(new_src['FixationDuration']/10)
+        )
+
+    #update graph on selected changes
+    select_city.on_change('value', lambda attr, old, new: update())
+    select_user.on_change('value', lambda attr, old, new: update())
+
+    #make layout for the graph and selectors
+    choices = column(select_city, select_user)
+    city_map = make_plot(source_city)
+    overlay = row(city_map, choices)
+
+    update()
+    doc.add_root(overlay)
+
+
+
 @app.route('/vis1', methods=['GET', 'POST'])
 def index_vis1():
 	if request.method == 'POST':
@@ -78,9 +160,18 @@ def index_vis1():
 		# the redirect can be to the same route or somewhere else
 		return redirect(url_for('vispage1'))
 	# show the form, it wasn't submitted
-	vis_page = 1
-	vis_text = 'The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'
-	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
+	with pull_session(url="http://localhost:5007/vis1") as session:
+		vis_page = 1
+		vis_text = 'The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'
+		script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
+		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
+
+def bk_worker_1():
+    server = Server({'/vis1': Vis1}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5007)
+    server.start()
+    server.io_loop.start()
+
+Thread(target=bk_worker_1).start()
 
 @app.route('/vis2', methods=['GET', 'POST'])
 def index_vis2():
@@ -96,6 +187,8 @@ def index_vis2():
 		#script = server_document('http://127.0.0.1:5006/vis2')
 		script = server_session(session_id=session.id, url='http://localhost:5006/vis2')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
+
+
 
 def Vis2(doc):
     #load dataset
@@ -175,14 +268,12 @@ def Vis2(doc):
 
     doc.add_root(overlay)
 
-def bk_worker():
-    # Can't pass num_procs > 1 in this configuration. If you need to run multiple
-    # processes, see e.g. flask_gunicorn_embed.py
+def bk_worker_2():
     server = Server({'/vis2': Vis2}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5006)
     server.start()
     server.io_loop.start()
 
-Thread(target=bk_worker).start()
+Thread(target=bk_worker_2).start()
 
 @app.route('/vis3', methods=['GET', 'POST'])
 def index_vis3():
