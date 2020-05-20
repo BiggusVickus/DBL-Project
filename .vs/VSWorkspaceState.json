@@ -2,11 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\static",
-    "\\static\\Uploads",
-    "\\templates",
-    "\\venv",
-    "\\__pycache__"
+    "\\static\\Visualizations",
+    "\\static\\Visualizations\\Uploads"
   ],
-  "SelectedNode": "\\static\\Uploads\\.DS_Store",
+  "SelectedNode": "\\static\\Visualizations\\Vis3.py",
   "PreviewInSolutionExplorer": false
 }
