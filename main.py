@@ -21,6 +21,8 @@ from PIL import Image
 from bokeh.server.server import Server
 from bokeh.themes import Theme
 from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
+from bokeh.client import pull_session
+from bokeh.embed import server_session
 
 UPLOAD_FOLDER = './Uploads'
 app = Flask(__name__)
@@ -88,14 +90,16 @@ def index_vis2():
 		# the redirect can be to the same route or somewhere else
 		return redirect(url_for('vispage'))
 	# show the form, it wasn't submitted
-	vis_page = 2
-	vis_text = 'The goal of this visualization is to show the user how the x and y position changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
-	script = server_document('http://127.0.0.1:5006/Vis2')
-	return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
+	with pull_session(url="http://localhost:5006/vis2") as session:
+		vis_page = 2
+		vis_text = 'The goal of this visualization is to show the user how the x and y position changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
+		#script = server_document('http://127.0.0.1:5006/vis2')
+		script = server_session(session_id=session.id, url='http://localhost:5006/vis2')
+		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
 
 def Vis2(doc):
     #load dataset
-    df_paths = pd.read_csv('dataset/fixation_data.csv', parse_dates=[0])
+    df_paths = pd.read_csv('Visualizations/fixation_data.csv', parse_dates=[0])
     df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
     #Global Variables
@@ -174,7 +178,7 @@ def Vis2(doc):
 def bk_worker():
     # Can't pass num_procs > 1 in this configuration. If you need to run multiple
     # processes, see e.g. flask_gunicorn_embed.py
-    server = Server({'/Vis2': Vis2}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:5006"])
+    server = Server({'/vis2': Vis2}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5006)
     server.start()
     server.io_loop.start()
 
@@ -208,4 +212,4 @@ def index_vis4():
 
 
 if __name__ == "__main__":
-	app.run(port=5006, debug=True)
+	app.run(port=8080, debug=True)
