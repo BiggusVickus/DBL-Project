@@ -1,24 +1,27 @@
 <!doctype html>
 <meta charset="utf-8">
+<head>
+<title> Eye Tracking {{vis_page}}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-<script src=/Upload.js/setup()></script>
 <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<link href="/static/css/favicon.ico" rel="icon" type="image/x-icon" />
 <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css" rel="stylesheet">
 <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/vispage.css') }}">
+</head>
 <div class="sidenav">
 	<a href="{{ url_for('index_vis1') }}">Visualization 1</a>
 	<a href="{{ url_for('index_vis2') }}">Visualization 2</a>
 	<a href="{{ url_for('index_vis3') }}">Visualization 3</a>
 	<a href="{{ url_for('index_vis4') }}">Visualization 4</a>
 </div>
-<!-- The {{_}} takes in different inputs (see main.py, and the vis_page/vis_text are passed to the {{vis_page}} and {{vis_text}} based on what page you are on. Limits repetivity of code. -->
+<!-- The {{_}} takes in different inputs (see main.py), and the vis_page/vis_text variable are passed to the {{vis_page}} and {{vis_text}} based on what page you are on. Limits repetivity of code. -->
 <div class="main">
 	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
-	<h3>Welcome to Visualization {{ vis_page }}</h3>
+	<h3>Welcome to {{ vis_page }}</h3>
 	<div>{{ vis_text }}</div>
 </div>
 
