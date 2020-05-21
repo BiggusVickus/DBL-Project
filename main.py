@@ -93,6 +93,7 @@ def index_vis4():
 	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
 
 
+
 #starts the app in debug mode, hit refresh to see an updated page, all without restarting the server. If changing CSS stuff, do a hrd refresh with cmd+shift+r.
 if __name__ == "__main__":
 	app.run(debug=True)
