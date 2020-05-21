@@ -1,6 +1,7 @@
 import numpy as np  # import auxiliary library, typical idiom
 import pandas as pd
 import csv
+import math
 import seaborn as sns
 import matplotlib.pyplot as plt
 from bokeh.layouts import gridplot, column, row, WidgetBox, layout
@@ -15,7 +16,8 @@ from bokeh.transform import transform
 sns.set()  # set Seaborn defaults
 
 #load dataset
-df_paths = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
+df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
+#C:\Users\20190756\Documents\GitHub\DBL-Project\static\Visualizations\Uploads\fixation_data.csv
 
 #Global Variables
 #users = []
@@ -34,6 +36,7 @@ def make_dataset():
     plot_data['closeness'] = list_closeness #the list is added to the dataframe as a new column named "closeness" and only contains 0s
 
     close = 15
+    #close = (p*w*h) / (math.Pi* n**t)
     for index, row in plot_data.iterrows(): #Iterates every row one by one
         closeness_val = int(row['closeness'])
         xi_val = int(row['MappedFixationPointX'])
@@ -61,6 +64,8 @@ def make_plot(src):
     )
 
     #p.image_url(url = ['images/03_Bordeaux_S1.jpg'], x = 0 , y = 1500, w = 1500 , h = 1500)
+    #image = PIL.Image.open("sample.png")
+    #width, height = image.size
 
     colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"]
     cmap = LinearColorMapper(palette=colors)
@@ -100,9 +105,7 @@ def update():
 
 selectStation.on_change('value', lambda attr, old, new: update())
 #selectUser.on_change('value', lambda attr, old, new: update())
-selections = [selectStation]
-              #, selectUser
-
+selections = [selectStation] #, selectUser
 
 #widgets = column(*selections, width = 320, height = 200)
 widgets = column(selectStation) #, selectUser
