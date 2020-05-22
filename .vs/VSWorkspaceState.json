@@ -2,10 +2,7 @@
   "ExpandedNodes": [
     "",
     "\\static",
-    "\\static\\css",
-    "\\static\\Visualizations",
-    "\\static\\Visualizations\\Uploads",
-    "\\__pycache__"
+    "\\static\\Visualizations"
   ],
   "SelectedNode": "\\static\\Visualizations\\Vis3.py",
   "PreviewInSolutionExplorer": false
