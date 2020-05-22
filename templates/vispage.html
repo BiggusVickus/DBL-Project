@@ -7,21 +7,24 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+<link href="https://fonts.googleapis.com/css?family=Lora:400,700|Montserrat:300" rel="stylesheet">
 <link href="/static/css/favicon.ico" rel="icon" type="image/x-icon" />
 <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css" rel="stylesheet">
 <link href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.0.min.css" rel="stylesheet">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/vispage.css') }}">
 </head>
 <div class="sidenav">
-	<a href="{{ url_for('index_vis1') }}">Visualization 1</a>
-	<a href="{{ url_for('index_vis2') }}">Visualization 2</a>
-	<a href="{{ url_for('index_vis3') }}">Visualization 3</a>
-	<a href="{{ url_for('index_vis4') }}">Visualization 4</a>
+	<a href="{{ url_for('index_vis1') }}">Scan-Path</a>
+	<a href="{{ url_for('index_vis2') }}">Time Graph</a>
+	<a href="{{ url_for('index_vis3') }}">Heat Map</a>
+	<a href="{{ url_for('index_vis4') }}">Bar Chart</a>
 </div>
 <!-- The {{_}} takes in different inputs (see main.py), and the vis_page/vis_text variable are passed to the {{vis_page}} and {{vis_text}} based on what page you are on. Limits repetivity of code. -->
 <div class="main">
 	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
-	<h3>Welcome to {{ vis_page }}</h3>
+	<h2>{{ vis_page }}</h2>
 	<div>{{ vis_text }}</div>
 </div>
 

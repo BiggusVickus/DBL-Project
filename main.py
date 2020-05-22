@@ -1,4 +1,3 @@
-#imports
 import os
 import glob
 import random
@@ -60,36 +59,36 @@ def index_home():
 	return render_template('index.html')
 
 #first visualization, returns the visualization number and a summary. Repeat for below. 
-@app.route('/vis1', methods=['GET', 'POST'])
+@app.route('/Scan-Path', methods=['GET', 'POST'])
 def index_vis1():
 	if request.method == 'POST':
 		return redirect(url_for('vispage1'))
-	vis_page = 'Visualization 1'
-	vis_text = 'The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'
+	vis_page = 'Scan-Path'
+	vis_text = 'The concept of Scan-Path is to show the user the difference between the scanpath of a colored graph and a noncolored graph. By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'
 	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
 
-@app.route('/vis2', methods=['GET', 'POST'])
+@app.route('/Time-Graph', methods=['GET', 'POST'])
 def index_vis2():
 	if request.method == 'POST':
 		return redirect(url_for('vispage'))
-	vis_page = 'Visualization 2'
-	vis_text = 'The goal of this visualization is to show the user how the x and y poition changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
+	vis_page = 'Time Graph'
+	vis_text = 'The goal for Time Graph is to show the user how the x and y poition changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
 	return render_template('vispage.html', vis_page = vis_page, vis_text = vis_text)
 
-@app.route('/vis3', methods=['GET', 'POST'])
+@app.route('/Heat-Map', methods=['GET', 'POST'])
 def index_vis3():
 	if request.method == 'POST':
 		return redirect(url_for('vispage'))
-	vis_page = 'Visualization 3'
-	vis_text = 'The idea behind this visualization is that the user can see a heatmap of a specific user, map, and map color. It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding. All fixation points from each user fo a specific stimuli are added to the map. Depending on how many other dots are close to a dot, the dot\'s color changes from blue to red. The denser the dots, the redder the dots will appear. The user can select the image they want to analyse as well as 2 values, t and p. The closeness of a dot is calculated by taking a dot on the screen and making a virtual circle around it. If another dot is in that circle, the closeness value is increased by 1 for both dots. Repeat for all other dots. Then the dots are put onto the graph with a color coding that has been evenly distributed so that a certain percentage of dots have a color coding. The radius of the circle is dynamically changed with the input size of the width and height of the image, the proportion of the image size constant, the number of dots, and a constant t. The user can self select the value of t and p. The mathematical formula for the radius of the circle is sqrt(w*h*p/(pi*n^t)), where w=width, h=height, p=proportion of circle area to rectange area, n= number of dots, and t is a constant. Assuming t=0, if p=1, then the area of the circle is equal to the area of the rectangle. If p=0.01, then the area of the circle is 1\% of the area of the rectangle. The user can likewise select to affect the size of the radius by choosing to enable t. N is raised to the power of t, so the larger the t, the smaller the circle will appear. This allows the user to penalize the radius size. If there a lot of dots, the user can select to derease the circle size even further.'
+	vis_page = 'Heat Map'
+	vis_text = 'The idea behind Heat Map is that the user can see a heatmap of a specific user, map, and map color. It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding. All fixation points from each user fo a specific stimuli are added to the map. Depending on how many other dots are close to a dot, the dot\'s color changes from blue to red. The denser the dots, the redder the dots will appear. The user can select the image they want to analyse as well as a constant value \(p\). The closeness of a dot is calculated by taking a dot on the screen and making a virtual circle around it. If another dot is in that circle, the closeness value is increased by 1 for both dots. The dots are put onto the graph with an evenly distributed color coding. The radius of the circle is dynamically changed with the input size of the width and height of the image, and a proportion of the image size constant. The user can self select the value of \(p\). The mathematical formula for the radius of the circle is \(\sqrt{w*h*p \over \pi}\), where \(w=width, h=height, p=\)\(wanted\;area\;of\;circle \over area\;of\;image\). If \(p=0.05\), then the area of the circle is \(5\%\) the area of the rectangle.'
 	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
 
-@app.route('/vis4', methods=['GET', 'POST'])
+@app.route('/Bar-Chart', methods=['GET', 'POST'])
 def index_vis4():
 	if request.method == 'POST':
 		return redirect(url_for('vispage'))
-	vis_page = 'Visualization 4'
-	vis_text = 'The idea behind this visualization is that you can see....'
+	vis_page = 'Bar Chart'
+	vis_text = 'The idea behind Bar Chart is that you can see....'
 	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
 
 
