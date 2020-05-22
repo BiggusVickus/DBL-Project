@@ -67,6 +67,11 @@ def make_plot(src):
     #image = PIL.Image.open("sample.png")
     #width, height = image.size
 
+    #dropwdown = ['hello', 'goodbye', ...]
+    #x = select.dropwdown
+    #image name = str(images/) + str(x)
+    p.image_url(url = [srt(image_name)], x = 0 , y = 1500, w = 1500 , h = 1500)
+
     colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"]
     cmap = LinearColorMapper(palette=colors)
     wid = 15
@@ -90,6 +95,9 @@ stations = list(dict.fromkeys(stations))
 
 selectStation = Select(title="Station:", value = '09_Tokyo_S1.jpg', options=stations)
 #selectUser = Select(title='User:', value='p1', options=users)
+
+image_name = str('static/Stimuli/') + str(selectStation.value)
+#C:\Users\20190756\Documents\GitHub\DBL-Project\static\Stimuli
 
 #Update
 def update():
