@@ -6,59 +6,63 @@
   z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
   left: 0;
-  background-color: rgb(51, 26, 165); /* Black */
+  background-color: black; /* Black */
   overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 20px;
+  padding-top: 20%;
 }
  
  /* The navigation menu links */
 .sidenav a {
-  padding: 6px 8px 6px 16px;
+  padding: 0px 0px 40px 0px;
   text-decoration: none;
-  font-size: 25px;
-  color: #2fd460;
+  font-size: 23px;
+  text-align: center;
+  color: white;
   display: block;
 }
  
  /* When you mouse over the navigation links, change their color */
 .sidenav a:hover {
-  color: #00c8fa;
+  color: gray;
+  padding: 0px 0px 40px 0px;
+  border: 1px solid gray;
+  border-radius: 5px;
+  border-style: solid;
 }
- 
  /* Style page content */
 .main {
   margin-left: 160px; /* Same as the width of the sidebar */
   padding: 0px 10px;
-  text-align: center
-}
- .image {
-  margin-left: 160px;
-  opacity: 0.4;
-  background-size:cover;
-  display: grid;
-  height: 100%;
-} 
-
-.container {
-  position: relative;
   text-align: center;
-  color: black;
+  text-decoration: none;
+}
+.title a{
+  color:black;
+  text-decoration: none;
 }
 
 .center-fit {
   max-width: 100%;
   max-height: 100vh;
   margin: auto;
+  margin-left: 10%;
   opacity: 20%;
 }
 
 .centered {
   position: absolute;
+  text-decoration: none;
+  margin-left: 160px;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 
-.paragraph {
+.p paragraph {
   font-size: 20;
+  text-decoration: none;
+}
+.container {
+  left:50%;
+  top: 50%;
 }

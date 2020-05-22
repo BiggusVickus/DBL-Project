@@ -3,6 +3,8 @@
 <head>
 <title> Eye Tracking {{vis_page}}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
@@ -20,7 +22,9 @@
 </div>
 <!-- The {{_}} takes in different inputs (see main.py), and the vis_page/vis_text variable are passed to the {{vis_page}} and {{vis_text}} based on what page you are on. Limits repetivity of code. -->
 <div class="main">
+	<div class = 'title'>
 	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
+</div>
 	<h3>Welcome to {{ vis_page }}</h3>
 	<div>{{ vis_text }}</div>
 </div>
