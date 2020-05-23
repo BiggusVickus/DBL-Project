@@ -6,23 +6,31 @@
   z-index: 1; /* Stay on top */
   top: 0; /* Stay at the top */
   left: 0;
-  background-color: rgb(51, 26, 165); /* Black */
+  font-family: 'Lora', serif;
+  background-color: black; /* Black */
   overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 20px;
+  padding-top: 15%;
 }
  
  /* The navigation menu links */
 .sidenav a {
-  padding: 6px 8px 6px 16px;
+  padding: 0px 0px 40px 0px;
   text-decoration: none;
-  font-size: 25px;
-  color: #2fd460;
+  font-size: 23px;
+  font-family: 'Lora', serif;
+  color: white;
   display: block;
+  text-align: center;
 }
  
  /* When you mouse over the navigation links, change their color */
 .sidenav a:hover {
-  color: #00c8fa;
+  color: gray;
+  padding: 0px 0px 40px 0px;
+  border: 1px solid gray;
+  font-family: 'Lora', serif;
+  border-radius: 10px;
+  
 }
  
  /* Style page content */
@@ -57,6 +65,16 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  font-family: 'Lora', serif;
+}
+
+.centered a{
+  text-decoration: none;
+  color: black;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 300;
+  font-size: 35px;
+  text-transform: uppercase;
 }
 
 .paragraph {
