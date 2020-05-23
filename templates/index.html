@@ -32,6 +32,7 @@
                 
 			<div>Please select a csv file with accompanying picture(s) to go along with it. Hold ctrl (or cmd) to select multiple files. 
 			</div>
+			#handles messages for uploads
 			<p>
 				{% with messages = get_flashed_messages() %}
 				  {% if messages %}
@@ -39,7 +40,7 @@
 					{% for message in messages %}
 					  <div>{{ message }}</div>
 					{% endfor %}
-					</ul>
+					</ul> 
 				  {% endif %}
 				{% endwith %}
 			</p>

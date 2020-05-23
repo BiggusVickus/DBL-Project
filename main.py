@@ -15,12 +15,13 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 #Remove pdf later
-ALLOWED_EXTENSIONS = set(['csv', 'pdf', 'png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS = set(['csv', 'png', 'jpg', 'jpeg'])
 
 def allowed_file(filename):
-	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
+
 	
-#randomly selects a colored image from /static/Stimuli then passes it onto the html page
+#randomly selects a colored image from /static/Stimuli then passes it onto  the html page
 @app.route('/')
 def upload_form():
 	image_list = [name for name in glob.glob('static/Stimuli/*[0-9]_*')]
