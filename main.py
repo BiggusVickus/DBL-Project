@@ -24,6 +24,7 @@ from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 from bokeh.client import pull_session
 from bokeh.embed import server_session
 from flask.helpers import url_for
+import random
 
 UPLOAD_FOLDER = './static/Visualizations/Uploads'
 app = Flask(__name__)
