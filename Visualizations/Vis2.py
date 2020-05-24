@@ -107,8 +107,7 @@ def Vis2(doc):
     update()
 
     doc.add_root(overlay)
-<<<<<<< Updated upstream
-    doc.theme = Theme(filename = 'theme.yaml')
+  #  doc.theme = Theme(filename = 'theme.yaml')
 
 @app.route('/', methods=['GET'])
 def app_page():
@@ -127,28 +126,3 @@ if __name__ == '__main__':
     print('I hope this works')
     print('Opening single process Flask app with embedded Bokeh application on http://localhost:5006/')
     app.run(port=5006)
-=======
-
-
-@app.route('/', methods=['GET'])
-def bkapp_page():
-    script = server_document('http://127.0.0.1:5000/vis2')
-    return render_template("embed.html", script=script, template="Flask")
-
-
-def bk_worker():
-    # Can't pass num_procs > 1 in this configuration. If you need to run multiple
-    # processes, see e.g. flask_gunicorn_embed.py
-    server = Server({'/vis2': Vis2}, io_loop=IOLoop(), allow_websocket_origin=["http://127.0.0.1:5000/"])
-    server.start()
-    server.io_loop.start()
-
-Thread(target=bk_worker).start()
-
-if __name__ == '__main__':
-    print('Opening single process Flask app with embedded Bokeh application on http://localhost:5006/')
-    print()
-    print('Multiple connections may block the Bokeh app in this configuration!')
-    print('See "flask_gunicorn_embed.py" for one way to run multi-process')
-    app.run(port=5000)
->>>>>>> Stashed changes
