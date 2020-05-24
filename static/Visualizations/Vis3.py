@@ -34,7 +34,8 @@ df_paths = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_
 #users = []
 stations = []
 
-src = ColumnDataSource(data = dict(x=[], y=[], timestamp=[], station=[], user=[], closeness=[]))
+
+src = ColumnDataSource(data = dict(url = [], x=[], y=[], timestamp=[], station=[], user=[], closeness=[]))
 
 df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 
                             'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
@@ -49,7 +50,7 @@ dia2 = dia**2
 def make_dataset():
     plot_data = df_paths[(df_paths['StimuliName'] == selectStation.value)].copy() # & (df_paths['user'] == selectUser.value)
 
-    background = selectStation.value
+   # background = selectStation.value
 
     plot_data = plot_data.sort_values(by=['MappedFixationPointX']).reset_index().drop('index', axis=1)#sort by x coordinate
    
@@ -83,8 +84,10 @@ def make_plot(src):
         x_axis_label = 'x coordinate',
         y_axis_label = 'y coordinate'
     )
-    p.image_url(url = ["https://www.jelter.net/stimuli/" + selectStation.value], 
-                x = 0 , y = 0, w = width, h = height) #'../../' + 
+    image = ImageURL(url="url", x = 0 , y = 0, w = width, h = height)
+    #p.image_url(url = ["https://www.jelter.net/stimuli/" + selectStation.value], 
+    #            x = 0 , y = 0, w = width, h = height) #'../../' + 
+    p.add_glyph(src, image)
     colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"]
     cmap = LinearColorMapper(palette=colors)
     #hei = dia*ratio
@@ -122,7 +125,9 @@ selectClose.js_on_change('value', callback)
 #Update
 def update():
     new_src = make_dataset()
+    N = new_src.size//9
     src.data = dict(
+        url = ["https://www.jelter.net/stimuli/" + selectStation.value]*N,
         x=new_src['MappedFixationPointX'],
         y=new_src['MappedFixationPointY'],
         timestamp=new_src['Timestamp'],
@@ -134,7 +139,7 @@ def update():
 selectStation.on_change('value', lambda attr, old, new: update())
 selections = [selectStation]
 
-image = PIL.Image.open('static/Stimuli/' + selectStation.value)
+image = PIL.Image.open('static/Visualizations/Stimuli/' + selectStation.value)
 #C:\Users\20190756\Documents\GitHub\DBL-Project\static\Stimuli
 width, height = image.size
 
