@@ -20,7 +20,6 @@ from bokeh.models.callbacks import CustomJS
 from PIL import Image
 from bokeh.server.server import Server
 from bokeh.themes import Theme
-from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 from bokeh.client import pull_session
 from bokeh.embed import server_session
 from flask.helpers import url_for
