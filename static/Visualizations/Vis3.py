@@ -134,7 +134,7 @@ def update():
 selectStation.on_change('value', lambda attr, old, new: update())
 selections = [selectStation]
 
-image = PIL.Image.open('static/Stimuli/' + selectStation.value)
+image = PIL.Image.open('Stimuli/' + selectStation.value)
 #C:\Users\20190756\Documents\GitHub\DBL-Project\static\Stimuli
 width, height = image.size
 
