@@ -7,7 +7,6 @@ import pandas as pd
 import csv
 import math
 import seaborn as sns
-from PIL import Image
 import urllib3 as urllib
 import io
 import matplotlib.pyplot as plt
@@ -28,12 +27,9 @@ sns.set()  # set Seaborn defaults
 
 #load dataset
 df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
-#C:\Users\20190756\Documents\GitHub\DBL-Project\static\Visualizations\Uploads\fixation_data.csv
 
 #Global Variables
-#users = []
 stations = []
-
 
 src = ColumnDataSource(data = dict(url = [], x=[], y=[], timestamp=[], station=[], user=[], closeness=[]))
 
@@ -49,8 +45,6 @@ dia2 = dia**2
 #Choosing the data we want
 def make_dataset():
     plot_data = df_paths[(df_paths['StimuliName'] == selectStation.value)].copy() # & (df_paths['user'] == selectUser.value)
-
-   # background = selectStation.value
 
     plot_data = plot_data.sort_values(by=['MappedFixationPointX']).reset_index().drop('index', axis=1)#sort by x coordinate
    
