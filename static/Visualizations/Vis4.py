@@ -9,6 +9,7 @@ from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL
 from bokeh.layouts import column, row, WidgetBox, layout
 from bokeh.models.callbacks import CustomJS
 from bokeh.transform import dodge
+from math import pi
 
 #Reading csv file
 df_map = pd.read_csv('Datasets/fixation_data.csv', parse_dates=[0])
@@ -81,49 +82,53 @@ def make_plot(src):
     fig1 = figure(
         x_range = list_1,
         y_range = (0,750000),
-        title = 'Barcharts',
+        title = 'S1 Color Barcharts',
         plot_width = 400,
         plot_height = 400
     )
     fig1.vbar(x='x', top = 'fixation_duration', width = 0.45, source = source_city, color = "red", legend_label = "color")
     fig1.xaxis.axis_label = 'City'
     fig1.yaxis.axis_label = 'Time'
+    fig1.xaxis.major_label_orientation = "vertical"
     fig1.xgrid.grid_line_color = None
     
     fig2 = figure(
         x_range = list_2,
         y_range = (0,750000),
-        title = 'Barcharts',
+        title = 'S1 Gray Barcharts',
         plot_width = 400,
         plot_height = 400
     )
     fig2.vbar(x='x', top = 'fixation_duration', width = 0.45, source = source_city, color = "red", legend_label = "gray")
     fig2.xaxis.axis_label = 'City'
     fig2.yaxis.axis_label = 'Time'
+    fig2.xaxis.major_label_orientation = "vertical"
     fig2.xgrid.grid_line_color = None
 
     fig3 = figure(
         x_range = list_3,
         y_range = (0,750000),
-        title = 'Barcharts',
+        title = 'S2 Color Barcharts',
         plot_width = 400,
         plot_height = 400
     )
     fig3.vbar(x='x', top = 'fixation_duration', width = 0.45, source = source_city, color = "red", legend_label = "color")
     fig3.xaxis.axis_label = 'City'
     fig3.yaxis.axis_label = 'Time'
+    fig3.xaxis.major_label_orientation = "vertical"
     fig3.xgrid.grid_line_color = None
 
     fig4 = figure(
         x_range = list_4,
         y_range = (0,750000),
-        title = 'Barcharts',
+        title = 'S2 Gray Barcharts',
         plot_width = 400,
         plot_height = 400
     )
     fig4.vbar(x='x', top = 'fixation_duration', width = 0.45, source = source_city, color = "red", legend_label = "gray")
     fig4.xaxis.axis_label = 'City'
     fig4.yaxis.axis_label = 'Time'
+    fig4.xaxis.major_label_orientation = "vertical"
     fig4.xgrid.grid_line_color = None
 
     return [fig1,fig2,fig3,fig4]
