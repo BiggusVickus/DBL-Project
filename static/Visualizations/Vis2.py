@@ -13,7 +13,7 @@ from PIL import Image
 sns.set()  # set Seaborn defaults
 
 #load dataset
-df_paths = pd.read_csv('dataset/fixation_data.csv', parse_dates=[0])
+df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
 #Global Variables
