@@ -27,7 +27,7 @@ import pandas.io.sql as psql
 sns.set()  # set Seaborn defaults
 
 #load dataset
-df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
+df_paths = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
 #C:\Users\20190756\Documents\GitHub\DBL-Project\static\Visualizations\Uploads\fixation_data.csv
 
 #Global Variables

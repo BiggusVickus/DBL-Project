@@ -23,15 +23,16 @@ from bokeh.themes import Theme
 from bokeh.sampledata.sea_surface_temperature import sea_surface_temperature
 from bokeh.client import pull_session
 from bokeh.embed import server_session
+from flask.helpers import url_for
 
-UPLOAD_FOLDER = './Uploads'
+UPLOAD_FOLDER = './static/Visualizations/Uploads'
 app = Flask(__name__)
 app.secret_key = "secret key"
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 
-ALLOWED_EXTENSIONS = set(['csv', 'pdf', 'png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS = set(['csv', 'png', 'jpg', 'jpeg'])
 
 def allowed_file(filename):
 	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -192,7 +193,7 @@ def index_vis2():
 
 def Vis2(doc):
     #load dataset
-    df_paths = pd.read_csv('Visualizations/fixation_data.csv', parse_dates=[0])
+    df_paths = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
     df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
     #Global Variables

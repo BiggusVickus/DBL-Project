@@ -12,7 +12,7 @@ import numpy as np
 #output_file('DBLvis1.html')
 
 #read csv file
-df_map = pd.read_csv('static/Uploads/fixation_data.csv', parse_dates=[0])
+df_map = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
 
 #create ColumnDataSource
 source_city = ColumnDataSource(data = dict(x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
