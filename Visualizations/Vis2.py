@@ -20,19 +20,11 @@ from bokeh.themes import Theme
 
 sns.set()  # set Seaborn defaults
 
-<<<<<<< Updated upstream
-app = Flask(__name__) 
-
-#load dataset
-def Visualization2(doc):
-    df_paths = pd.read_csv('fixation_data.csv', parse_dates=[0])
-=======
 app = Flask(__name__)
 
 def Vis2(doc):
     #load dataset
     df_paths = pd.read_csv('dataset/fixation_data.csv', parse_dates=[0])
->>>>>>> Stashed changes
     df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
     #Global Variables
