@@ -39,27 +39,27 @@ def allowed_file(filename):
 	
 @app.route('/')
 def upload_form():
-	return render_template('index.html')
+	image_list = [name for name in glob.glob('static/Visualizations/Stimuli/*[0-9]_*')]
+	image_for_background = str(image_list[random.randint(0, len(image_list)-1)])
+	return render_template('index.html', image_for_background = image_for_background)
 
 @app.route('/', methods=['POST'])
 def upload_file():
 	if request.method == 'POST':
-		# check if the post request has the file part
-		if 'file' not in request.files:
+        # check if the post request has the files part
+		if 'files[]' not in request.files:
 			flash('No file part')
 			return redirect(request.url)
-		file = request.files['file']
-		if file.filename == '':
-			flash('No file selected for uploading')
-			return redirect(request.url)
-		if file and allowed_file(file.filename):
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			flash('File successfully uploaded')
-			return redirect('/')
-		else:
-			flash('Allowed file types are csv, png, jpg, and jpeg')
-			return redirect(request.url)
+		files = request.files.getlist('files[]')
+		for file in files:
+			if file and allowed_file(file.filename):
+				filename = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			else:
+				flash('Allowed file types are csv, png, jpg, and jpeg')
+		flash('File(s) successfully uploaded')
+		return redirect(request.url)
+		
 
 @app.route('/home', methods=['GET', 'POST'])
 def index_home():
@@ -162,7 +162,7 @@ def index_vis1():
 		return redirect(url_for('vispage1'))
 	# show the form, it wasn't submitted
 	with pull_session(url="http://localhost:5007/vis1") as session:
-		vis_page = 1
+		vis_page = 'Scan Path'
 		vis_text = 'The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'
 		script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
@@ -183,7 +183,7 @@ def index_vis2():
 		return redirect(url_for('vispage'))
 	# show the form, it wasn't submitted
 	with pull_session(url="http://localhost:5006/vis2") as session:
-		vis_page = 2
+		vis_page = 'Time Graph'
 		vis_text = 'The goal of this visualization is to show the user how the x and y position changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
 		#script = server_document('http://127.0.0.1:5006/vis2')
 		script = server_session(session_id=session.id, url='http://localhost:5006/vis2')
@@ -284,8 +284,8 @@ def index_vis3():
 		# the redirect can be to the same route or somewhere else
 		return redirect(url_for('vispage'))
 	# show the form, it wasn't submitted
-	vis_page = 3
-	vis_text = 'The idea behind this visualization is that the user can see a heatmap of a specific user, map, and map color. It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding.'
+	vis_page = 'Heat Map'
+	vis_text = 'The idea behind Heat Map is that the user can see a heatmap of a specific user, map, and map color. It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding. All fixation points from each user fo a specific stimuli are added to the map. Depending on how many other dots are close to a dot, the dot\'s color changes from blue to red. The denser the dots, the redder the dots will appear. The user can select the image they want to analyse as well as a constant value \(p\). The closeness of a dot is calculated by taking a dot on the screen and making a virtual circle around it. If another dot is in that circle, the closeness value is increased by 1 for both dots. The dots are put onto the graph with an evenly distributed color coding. The radius of the circle is dynamically changed with the input size of the width and height of the image, and a proportion of the image size constant. The user can self select the value of \(p\). The mathematical formula for the radius of the circle is \(\sqrt{w*h*p \over \pi}\), where \(w=width, h=height, p=\)\(wanted\;area\;of\;circle \over area\;of\;image\). If \(p=0.05\), then the area of the circle is \(5\%\) the area of the rectangle.'
 	return render_template('vispage.html', vis_page = vis_page, vis_text=vis_text)
 
 @app.route('/vis4', methods=['GET', 'POST'])
@@ -295,7 +295,7 @@ def index_vis4():
 		# redirect to end the POST handling
 		# the redirect can be to the same route or somewhere else
 		return redirect(url_for('vispage'))
-	vis_page = 4
+	vis_page = 'Bar Chart'
 	vis_text = 'The idea behind this visualization is that you can see....'
 	# show the form, it wasn't submitted
 
