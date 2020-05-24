@@ -25,6 +25,7 @@ from bokeh.client import pull_session
 from bokeh.embed import server_session
 from flask.helpers import url_for
 import random
+import glob
 
 UPLOAD_FOLDER = './static/Visualizations/Uploads'
 app = Flask(__name__)
