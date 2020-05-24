@@ -1,4 +1,4 @@
-#Note to the examiner: This visualization is complete except not updating background image. 
+#Note to the examiner:
 #In the future slider bars and other interactive methods will be added to allow user to customize the plotting.
 #Right now 3 slider bars are present but not yet been made interactive.
 
@@ -27,7 +27,7 @@ import pandas.io.sql as psql
 sns.set()  # set Seaborn defaults
 
 #load dataset
-df_paths = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
+df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 #C:\Users\20190756\Documents\GitHub\DBL-Project\static\Visualizations\Uploads\fixation_data.csv
 
 #Global Variables
@@ -90,7 +90,6 @@ def make_plot(src):
     p.add_glyph(src, image)
     colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"]
     cmap = LinearColorMapper(palette=colors)
-    #hei = dia*ratio
     p.ellipse(x="x", y="y", source=src, line_color=None, 
               fill_color=transform('closeness', cmap), width=dia, height=dia, alpha=alp)
     color_bar = ColorBar(color_mapper=cmap, ticker=LogTicker(),
@@ -139,8 +138,7 @@ def update():
 selectStation.on_change('value', lambda attr, old, new: update())
 selections = [selectStation]
 
-image = PIL.Image.open('static/Visualizations/Stimuli/' + selectStation.value)
-#C:\Users\20190756\Documents\GitHub\DBL-Project\static\Stimuli
+image = PIL.Image.open('Stimuli/' + selectStation.value)
 width, height = image.size
 
 ratio = width/height
