@@ -22,7 +22,7 @@ src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[],
 
 #Global variables
 stations = []
-users = []
+users = ["all"]
 
 #create city select widget
 for station in df_map['StimuliName']:
@@ -47,9 +47,7 @@ select_user = Select(
     options = users
 )
 
-#city = select_city.value
-
-#create figure and graph (scanpath)
+#create figure with background and graph (scanpath)
 def make_plot(src):
     fig = figure(
         title='Scanpath', 
@@ -71,9 +69,11 @@ def make_plot(src):
     return fig
 
 def make_dataset():
+
     plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
     return plot_data
 
+#update data with new dataframe for new input (selection)
 def update():
     new_src = make_dataset()
     N = new_src.size//9
@@ -86,12 +86,12 @@ def update():
         user=new_src['user'],
         fixation_duration=(new_src['FixationDuration']/10)
     )
-    #city = select_city.value
 
 #update graph on selected changes
 select_city.on_change('value', lambda attr, old, new: update())
 select_user.on_change('value', lambda attr, old, new: update())
 
+#get image and its properties
 image = PIL.Image.open('Stimuli/'+select_city.value)
 width, height = image.size
 ratio = width/height
