@@ -72,7 +72,7 @@ def update():
         y=new_src['MappedFixationPointY'],
         timestamp=new_src['Timestamp'],
         station=new_src['StimuliName'],
-        user=new_src['user'],
+        user=new_src['user']
     )
 
 selectStation.on_change('value', lambda attr, old, new: update())
