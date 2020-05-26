@@ -1,11 +1,11 @@
 # DBL-Project
 
- 
-To get the local server to work, you need to go to the terminal window. 
-First activate the virtual environment by typing ```. venv/bin/activate```. Turns out for Windows you use ```venv\bin\activate```. 
+ It's best to start this porject with Visual Studio Code, although terminal/command prompt or another editor/IDE should work. 
+To get the local server to work, you need to go to the terminal window (either command prompt or VSCode) and change your directory to the project location. 
+Activate the virtual environment by typing ```. venv/bin/activate```. Turns out for Windows you use ```venv\bin\activate```. 
 
-Then to run the server, type ```python main.py``` into the terminal window. If it gives some flask error, then type ```pip install flask```. Run ```python main.py``` again. You might have to do ```pip install bokeh``` as well. Some stuff appears in the terminal window. Click on ```http://127.0.0.1:5000/``` and it will open up a new window on your default web browser. You can upload a jpeg, pdf, csv, png file. The file will then be pushed to ```static/Uploads```. Multiplefiles can be selected. You can go to different pages for different visualizations. Everytime you visit the homepage, a new colored metro map image is randomly selected and displayed as a background. 
+Then to run the server, type ```python main.py``` into the terminal window. If it gives some flask error, then type ```pip install flask```. Run ```python main.py``` again. You might have to do ```pip install bokeh``` as well. 
 
-Although the upload function works, we haven't added support for files outside of the csv file given to us. Also when you upload your own images, they go to the wrong directory. We have preloaded the required csv and images into the proper place for you. The best way to use this software in it's current state is to use the software as is without uploading any files. Then after checking everthing out, you can upload your own files to check that the upload function works. 
+Please note that you might see a list of problems and errors. You have to find ```http://127.0.0.1:5000/``` and it will open up a new window on your default web browser. You can upload a jpeg, pdf, csv, png file*. The filse will then be uploaded to ```static/Visualizations/Uploads```. Multiple files can be selected and uploaded by holding cmd or ctrl. You can go to different pages for different visualizations. Everytime you visit the homepage, a new colored metro map image is randomly selected and displayed as a background. Each visualizations should be working 
 
-The visualizations may not be the most up to date, so the best way to see the most up to date branch would be to go to the directory ```static/visualizatons``` in the terminal/command prompt app. To run the most up to date visualization would be to run ```bokeh serve --show myapp.py``` where you can replace myapp with Vis1, Vis2, Vis3, or Vis4. 
+*Although the upload function works, we haven't added support for files outside of the csv file given to us. Also when you upload your own images, they go to the wrong directory. We have preloaded the required csv and images into the proper place for you. The best way to use this software in it's current state is to use the software as is without uploading any files. Then after checking everthing out, you can upload your own files to check that the upload function works. 
