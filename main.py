@@ -73,7 +73,7 @@ def upload_file():
 		return redirect(request.url)
 		
 
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index_home():
 	if request.method == 'POST':
 		# do stuff when the form is submitted
