@@ -7,7 +7,7 @@ import pandas as pd
 import csv
 import math
 import seaborn as sns
-import urllib3 as urllib
+#import urllib3 as urllib
 import io
 import matplotlib.pyplot as plt
 from bokeh.layouts import gridplot, column, row, WidgetBox, layout

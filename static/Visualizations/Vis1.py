@@ -58,7 +58,7 @@ def make_plot(src):
     )
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     fig.add_glyph(src, image)
-    fig.line(x = 'x', y = 'y', source=src)
+    fig.line(x = 'x', y = 'y', source=src, width = 3)
     fig.circle(
         x='x',
         y='y', 
