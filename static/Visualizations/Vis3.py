@@ -41,7 +41,7 @@ df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex
 ###########################commented out dia and replaced with math formula, same with dia2
 alp = 0.5 #transparency
 #dia = 15 #size of circles
-p_val = 0..05
+p_val = 0.05
 dia = sqrt((p_val * width * height) / (math.Pi))
 dia2 = (p_val * width * height) / (math.Pi)
 ###########################
