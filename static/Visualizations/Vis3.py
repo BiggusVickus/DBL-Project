@@ -36,11 +36,15 @@ src = ColumnDataSource(data = dict(url = [], x=[], y=[], timestamp=[], station=[
 df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 
                             'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
+
+
+###########################commented out dia and replaced with math formula, same with dia2
 alp = 0.5 #transparency
-dia = 15 #size of circles
-#p_val = 0.1
-#dia = (p_val * width * height) / (math.Pi)
-dia2 = dia**2
+#dia = 15 #size of circles
+p_val = 0..05
+dia = sqrt((p_val * width * height) / (math.Pi))
+dia2 = (p_val * width * height) / (math.Pi)
+###########################
 
 #Choosing the data we want
 def make_dataset():
@@ -83,8 +87,9 @@ def make_plot(src):
     #            x = 0 , y = 0, w = width, h = height) #'../../' + 
     p.add_glyph(src, image)
 
-    colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"]
-    #colorblind_palette = []
+    colors = ["#332288", '#117733', '#88CCEE', '#DDCC77', '#CC6677', '#AA4499', '#882255'] #colorblind safe
+    #colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"] #not colorblind safe
+    #colorblind_palette = [] now we don't need this anymore, as I updated the colors with colorbind-safe colors. I left the original color options above
 
     cmap = LinearColorMapper(palette=colors)
 
@@ -102,15 +107,15 @@ stations = list(dict.fromkeys(stations))
 
 selectStation = Select(title="Station:", value = '01_Antwerpen_S1.jpg', options=stations)
 
-selectAlpha = Slider(title="Select the transparancy of the plotting", start=0, end=1, value=0.05, step=0.01)
+#####changed some vlaues to idiot-proof this, like having 0 transparency or 0 closeness (nigga wat the fuck)
+selectAlpha = Slider(title="Select the transparancy of the plotting", start=0.01, end=1, value=0.05, step=0.01)
 selectSize = Slider(title="Select the size of the dots", start=0, end=50, value=0.1, step=1) 
-selectClose = Slider(title="Select the closeness value", start=0, end=1, value=0.1, step=0.01) #p-value in the equation
-checkboxColor = CheckboxGroup(labels=["Colorblind"], active=[0, 1])
+selectClose = Slider(title="Select the closeness value", start=0.01, end=1, value=0.05, step=0.01) #p-value in the equation
+#checkboxColor = CheckboxGroup(labels=["Colorblind"], active=[0, 1]) we don't need this anymore
 
 callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose, color = checkboxColor),
                     code="""
     const data = source.data;
-
     const alp = alpha.value;
     const dia = size.value;
     const p_val = close.value;
@@ -147,9 +152,21 @@ ratio = width/height
 print_width = int(ratio * 720)
 print_height = int(720)
 
+########hopefully this adds hoverable tooltips
+TOOLTIPS = hover.tooltips = [
+    ("(x,y)", "(@x, @y)"),
+    ("radius", "@radius")
+    ("timestamp", "@timestamp")
+    ("user", "@user")
+]
+
 widgets = column(selectStation)
 plot = make_plot(src)
+#########hopefully adds lassoselect as a tool that displays only a subset of users that have been selected
+plot.add_tools(LassoSelectTool('@user'))
+
+#########supposed to add the TOOLTIPS when hovering
 layout = row(plot, 
-             column( widgets, selectAlpha, selectSize, selectClose))
+             column( widgets, selectAlpha, selectSize, selectClose), tooltips = TOOLTIPS)
 update()
 curdoc().add_root(layout)
