@@ -14,7 +14,7 @@ from bokeh.layouts import gridplot, column, row, WidgetBox, layout
 from bokeh.plotting import figure, output_file, show, curdoc
 from bokeh.io import output_file, show, curdoc
 from bokeh.models import Select, Tabs, Panel, Button, ColumnDataSource, Grid, ImageURL, LinearAxis, Plot
-from bokeh.models import Range1d, ColorBar, LinearColorMapper, LogColorMapper, LogTicker, Div, Select, Slider, TextInput
+from bokeh.models import Range1d, ColorBar, LinearColorMapper, LogColorMapper, LogTicker, Div, Select, Slider, CheckboxGroup
 from bokeh.models.callbacks import CustomJS
 from PIL import Image
 import PIL
@@ -82,8 +82,12 @@ def make_plot(src):
     #p.image_url(url = ["https://www.jelter.net/stimuli/" + selectStation.value], 
     #            x = 0 , y = 0, w = width, h = height) #'../../' + 
     p.add_glyph(src, image)
+
     colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"]
+    #colorblind_palette = []
+
     cmap = LinearColorMapper(palette=colors)
+
     p.ellipse(x="x", y="y", source=src, line_color=None, 
               fill_color=transform('closeness', cmap), width=dia, height=dia, alpha=alp)
     color_bar = ColorBar(color_mapper=cmap, ticker=LogTicker(),
@@ -97,14 +101,17 @@ for station in df_paths['StimuliName']:
 stations = list(dict.fromkeys(stations))
 
 selectStation = Select(title="Station:", value = '01_Antwerpen_S1.jpg', options=stations)
+
 selectAlpha = Slider(title="Select the transparancy of the plotting", start=0, end=1, value=0.05, step=0.01)
 selectSize = Slider(title="Select the size of the dots", start=0, end=50, value=0.1, step=1) 
 selectClose = Slider(title="Select the closeness value", start=0, end=1, value=0.1, step=0.01) #p-value in the equation
+checkboxColor = CheckboxGroup(labels=["Colorblind"], active=[0, 1])
 
-callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose),
+callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose, color = checkboxColor),
                     code="""
     const data = source.data;
-    const alp_= alpha.value;
+
+    const alp = alpha.value;
     const dia = size.value;
     const p_val = close.value;
 
