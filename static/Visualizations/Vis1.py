@@ -1,7 +1,7 @@
 import bokeh as bk 
 from bokeh.plotting import figure, show, curdoc
 from bokeh.io import output_file, output_notebook, show 
-from bokeh.models import ColumnDataSource, Select, RadioButtonGroup, Plot, ImageURL
+from bokeh.models import ColumnDataSource, Select, RadioButtonGroup, Plot, ImageURL, Slider, ColorPicker
 from bokeh.layouts import row, column, gridplot, widgetbox
 from bokeh.models.widgets import Tabs, Panel
 import seaborn as sns
@@ -47,6 +47,8 @@ select_user = Select(
     options = users
 )
 
+graph_color = ColorPicker(color = "#14a33a", title = 'Choose color of the scan path')
+
 #create figure with background and graph (scanpath)
 def make_plot(src):
     fig = figure(
@@ -55,6 +57,7 @@ def make_plot(src):
         plot_height = print_height, 
         x_range = (0, width), 
         y_range = (height, 0),
+        color = graph_color.value
     )
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     fig.add_glyph(src, image)
@@ -64,7 +67,9 @@ def make_plot(src):
         y='y', 
         size = 'fixation_duration', 
         alpha = 0.5,
-        source = src
+        source = src,
+        line_width = 3,
+        color = graph_color.value
     )
     return fig
 
@@ -90,6 +95,7 @@ def update():
 #update graph on selected changes
 select_city.on_change('value', lambda attr, old, new: update())
 select_user.on_change('value', lambda attr, old, new: update())
+graph_color.on_change('value', lambda attr, old, new: update())
 
 #get image and its properties
 image = PIL.Image.open('Stimuli/'+select_city.value)
@@ -100,7 +106,7 @@ print_width = int(ratio * 720)
 print_height = int(720)
 
 #make layout for the graph and selectors
-choices = column(select_city, select_user)
+choices = column(select_city, select_user, graph_color)
 city_map = make_plot(src)
 layout = row(city_map, choices)
 
