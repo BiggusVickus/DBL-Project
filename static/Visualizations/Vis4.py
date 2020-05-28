@@ -29,10 +29,20 @@ df_map_S1_gray_grouped = df_map_S1_gray.groupby("StimuliName")
 df_map_S2_color_grouped = df_map_S2_color.groupby("StimuliName")
 df_map_S2_gray_grouped = df_map_S2_gray.groupby("StimuliName")
 
+df_map_S1_color_grouped_2 = df_map_S1_color.groupby(["StimuliName","user"])
+df_map_S1_gray_grouped_2 = df_map_S1_gray.groupby(["StimuliName","user"])
+df_map_S2_color_grouped_2 = df_map_S2_color.groupby(["StimuliName","user"])
+df_map_S2_gray_grouped_2 = df_map_S2_gray.groupby(["StimuliName","user"])
+
 S1_color = df_map_S1_color_grouped[['FixationDuration']].sum().reset_index()
 S1_gray = df_map_S1_gray_grouped[['FixationDuration']].sum().reset_index()
 S2_color = df_map_S2_color_grouped[['FixationDuration']].sum().reset_index()
 S2_gray = df_map_S2_gray_grouped[['FixationDuration']].sum().reset_index()
+
+S1_color_2 = df_map_S1_color_grouped_2[['FixationDuration']].sum().reset_index()
+S1_gray_2 = df_map_S1_gray_grouped_2[['FixationDuration']].sum().reset_index()
+S2_color_2 = df_map_S2_color_grouped_2[['FixationDuration']].sum().reset_index()
+S2_gray_2 = df_map_S2_gray_grouped_2[['FixationDuration']].sum().reset_index()
 
 list_1 = S1_color['StimuliName'].tolist()
 list_2 = S1_gray['StimuliName'].tolist()
@@ -130,6 +140,12 @@ def make_plot_1(src):
     fig1.yaxis.axis_label = 'Total Time'
     fig1.xaxis.major_label_orientation = pi/3
     fig1.xgrid.grid_line_color = None
+    fig1.add_tools(HoverTool(
+        tooltips=[
+            ("Total Time", "@fixation_duration")
+            #("p1","@dsfdf")
+        ], renderers=[bar]
+    ))
     return [fig1]
 
 def make_plot_2(src):
