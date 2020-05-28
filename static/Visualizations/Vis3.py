@@ -14,7 +14,7 @@ from bokeh.layouts import gridplot, column, row, WidgetBox, layout
 from bokeh.plotting import figure, output_file, show, curdoc
 from bokeh.io import output_file, show, curdoc
 from bokeh.models import Select, Tabs, Panel, Button, ColumnDataSource, Grid, ImageURL, LinearAxis, Plot
-from bokeh.models import Range1d, ColorBar, LinearColorMapper, LogColorMapper, LogTicker, Div, Select, Slider, CheckboxGroup
+from bokeh.models import Range1d, ColorBar, LinearColorMapper, LogColorMapper, LogTicker, Div, Select, Slider, TextInput
 from bokeh.models.callbacks import CustomJS
 from PIL import Image
 import PIL
@@ -92,7 +92,6 @@ def make_plot(src):
     #colorblind_palette = [] now we don't need this anymore, as I updated the colors with colorbind-safe colors. I left the original color options above
 
     cmap = LinearColorMapper(palette=colors)
-
     p.ellipse(x="x", y="y", source=src, line_color=None, 
               fill_color=transform('closeness', cmap), width=dia, height=dia, alpha=alp)
     color_bar = ColorBar(color_mapper=cmap, ticker=LogTicker(),
@@ -113,10 +112,10 @@ selectSize = Slider(title="Select the size of the dots", start=0, end=50, value=
 selectClose = Slider(title="Select the closeness value", start=0.01, end=1, value=0.05, step=0.01) #p-value in the equation
 #checkboxColor = CheckboxGroup(labels=["Colorblind"], active=[0, 1]) we don't need this anymore
 
-callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose, color = checkboxColor),
+callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose),
                     code="""
     const data = source.data;
-    const alp = alpha.value;
+    const alp_= alpha.value;
     const dia = size.value;
     const p_val = close.value;
 
