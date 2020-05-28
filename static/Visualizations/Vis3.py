@@ -86,11 +86,7 @@ def make_plot(src):
     #p.image_url(url = ["https://www.jelter.net/stimuli/" + selectStation.value], 
     #            x = 0 , y = 0, w = width, h = height) #'../../' + 
     p.add_glyph(src, image)
-
-    colors = ["#332288", '#117733', '#88CCEE', '#DDCC77', '#CC6677', '#AA4499', '#882255'] #colorblind safe
-    #colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"] #not colorblind safe
-    #colorblind_palette = [] now we don't need this anymore, as I updated the colors with colorbind-safe colors. I left the original color options above
-
+    colors = ["#0000FF", "#0072FF", "#00FF00", "#D1FF00", "#FFC500", "#FF6C00", "#FF0000"]
     cmap = LinearColorMapper(palette=colors)
     p.ellipse(x="x", y="y", source=src, line_color=None, 
               fill_color=transform('closeness', cmap), width=dia, height=dia, alpha=alp)
@@ -105,12 +101,9 @@ for station in df_paths['StimuliName']:
 stations = list(dict.fromkeys(stations))
 
 selectStation = Select(title="Station:", value = '01_Antwerpen_S1.jpg', options=stations)
-
-#####changed some vlaues to idiot-proof this, like having 0 transparency or 0 closeness (nigga wat the fuck)
-selectAlpha = Slider(title="Select the transparancy of the plotting", start=0.01, end=1, value=0.05, step=0.01)
+selectAlpha = Slider(title="Select the transparancy of the plotting", start=0, end=1, value=0.05, step=0.01)
 selectSize = Slider(title="Select the size of the dots", start=0, end=50, value=0.1, step=1) 
-selectClose = Slider(title="Select the closeness value", start=0.01, end=1, value=0.05, step=0.01) #p-value in the equation
-#checkboxColor = CheckboxGroup(labels=["Colorblind"], active=[0, 1]) we don't need this anymore
+selectClose = Slider(title="Select the closeness value", start=0, end=1, value=0.1, step=0.01) #p-value in the equation
 
 callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose),
                     code="""
