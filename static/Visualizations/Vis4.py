@@ -5,7 +5,7 @@ import seaborn as sns
 from bokeh.layouts import gridplot
 from bokeh.plotting import figure, output_file, show, curdoc
 from bokeh.io import output_file, show
-from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL
+from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, FactorRange, Button, HoverTool, CDSView, GroupFilter, CheckboxGroup
 from bokeh.layouts import column, row, WidgetBox, layout
 from bokeh.models.callbacks import CustomJS
 from bokeh.transform import dodge
@@ -50,10 +50,10 @@ list_3 = S2_color['StimuliName'].tolist()
 list_4 = S2_gray['StimuliName'].tolist()
 
 #Make ColumnDataSource
-source_city_1 = ColumnDataSource(data = dict(x=[], station=[], fixation_duration=[]))
-source_city_2 = ColumnDataSource(data = dict(x=[], station=[], fixation_duration=[]))
-source_city_3 = ColumnDataSource(data = dict(x=[], station=[], fixation_duration=[]))
-source_city_4 = ColumnDataSource(data = dict(x=[], station=[], fixation_duration=[]))
+source_city_1 = ColumnDataSource(data = dict(x=[], station=[], fixation_duration=[], user=[]))
+source_city_2 = ColumnDataSource(data = dict(x=[], station=[], fixation_duration=[], user=[]))
+source_city_3 = ColumnDataSource(data = dict(x=[], station=[], fixation_duration=[], user=[]))
+source_city_4 = ColumnDataSource(data = dict(x=[], station=[], fixation_duration=[], user=[]))
 
 #Global variables
 Stations_S1_Color = []
@@ -110,8 +110,19 @@ select_city_4 = Select(
     options = Stations_S2_Gray
 )
 
+select_city_6 = Select(
+    title = 'Choose city S2 Gray',
+    value = '01_Antwerpen_S2.jpg',
+    options = Stations_S2_Color
+)
+
+checkbox_group = CheckboxGroup(
+    labels = Stations_S1_Color, active = [0]
+)  
+
+
 def make_dataset_1():
-    plot_data_S1_color = S1_color[(S1_color['StimuliName'] == select_city_1.value)].copy()
+    plot_data_S1_color = S1_color[(S1_color['StimuliName'] == Stations_S1_Color)].copy()
     return plot_data_S1_color
 
 def make_dataset_2():
@@ -126,27 +137,28 @@ def make_dataset_4():
     plot_data_S2_gray = S2_gray[(S2_gray['StimuliName'] == select_city_4.value)].copy()
     return plot_data_S2_gray
 
+        
+fig1 = figure(
+    x_range = list_1,
+    y_range = (0,750000),
+    title = 'S1 Color Barcharts',
+    plot_width = 500,
+    plot_height = 500
+)
+bar = fig1.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_1, color = "red", legend_label = "color")
+fig1.xaxis.axis_label = 'City'
+fig1.yaxis.axis_label = 'Total Time'
+fig1.xaxis.major_label_orientation = pi/3
+fig1.xgrid.grid_line_color = None
+fig1.add_tools(HoverTool(
+    tooltips=[
+        ("Total Time", "@fixation_duration")
+        #("p1","@dsfdf")
+    ], renderers=[bar]
+))
 
-def make_plot_1(src):
-    fig1 = figure(
-        x_range = list_1,
-        y_range = (0,750000),
-        title = 'S1 Color Barcharts',
-        plot_width = 500,
-        plot_height = 500
-    )
-    fig1.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_1, color = "red", legend_label = "color")
-    fig1.xaxis.axis_label = 'City'
-    fig1.yaxis.axis_label = 'Total Time'
-    fig1.xaxis.major_label_orientation = pi/3
-    fig1.xgrid.grid_line_color = None
-    fig1.add_tools(HoverTool(
-        tooltips=[
-            ("Total Time", "@fixation_duration")
-            #("p1","@dsfdf")
-        ], renderers=[bar]
-    ))
-    return [fig1]
+bars = [bar]
+
 
 def make_plot_2(src):
     fig2 = figure(
@@ -194,7 +206,7 @@ def make_plot_4(src):
     return [fig4]
 
 #Update
-def update_1():
+def update_1(new):
     new_src = make_dataset_1()
     source_city_1.data = dict(
         x=new_src['StimuliName'],
@@ -226,28 +238,44 @@ def update_4():
         fixation_duration=new_src_4['FixationDuration']
     )
 
-select_city_1.on_change('value', lambda attr, old, new: update_1())
+def update_11(new):
+    cb_1 = checkbox_group.active
+    for x in range(len(bars)):
+        if x in cb_1:
+            bars[x].visible = True
+        else:
+            bars[x].visible = False
+
+
+#select_city_1.on_change('value', lambda attr, old, new: update_1())
 select_city_2.on_change('value', lambda attr, old, new: update_2())
 select_city_3.on_change('value', lambda attr, old, new: update_3())
 select_city_4.on_change('value', lambda attr, old, new: update_4())
+
+checkbox_group.on_click(update_11)
+
+#select_city_5.on_click(change_click_1)
+#select_city_5.on_change('value', lambda attr, old, new: update_1() & update_2())
 
 selection_1 = [select_city_1]
 selection_2 = [select_city_2]
 selection_3 = [select_city_3]
 selection_4 = [select_city_4]
 
-plot_1 = make_plot_1(source_city_1)
+selection_6 = [checkbox_group]
+
+#plot_1 = make_plot_1(source_city_1)
 plot_2 = make_plot_2(source_city_2)
 plot_3 = make_plot_3(source_city_3)
 plot_4 = make_plot_4(source_city_4)
 
-widget_1_2 = column(*selection_1, *selection_2, width = 320, height = 200)
+widget_1_2 = column(*selection_6, width = 320, height = 200)
 widget_3_4 = column(*selection_3, *selection_4, width = 320, height = 200)
 
 layout = layout([
-                [plot_1[0], plot_2[0], widget_1_2],
+                [fig1, plot_2[0], widget_1_2],
                 [plot_3[0], plot_4[0], widget_3_4]
 ])
 
-update_1(), update_2(), update_3(), update_4()
+update_1, update_2(), update_3(), update_4()
 curdoc().add_root(layout)
