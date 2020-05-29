@@ -12,7 +12,7 @@ from bokeh.transform import dodge
 from math import pi
 
 #Reading csv file
-df_map = pd.read_csv('Datasets/fixation_data.csv', parse_dates=[0])
+df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 df_map = df_map.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
 #Making data frames

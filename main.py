@@ -73,7 +73,7 @@ def upload_file():
 		return redirect(request.url)
 		
 
-@app.route('/home', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def index_home():
 	if request.method == 'POST':
 		# do stuff when the form is submitted
@@ -88,7 +88,7 @@ def Vis1(doc):
     df_map = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
 
     #create ColumnDataSource
-    source_city = ColumnDataSource(data = dict(x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
+    src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
 
     #Global variables
     stations = []
@@ -121,18 +121,20 @@ def Vis1(doc):
     def make_plot(src):
         fig = figure(
             title='Scanpath', 
-            plot_width = 900, 
-            plot_height = 600, 
-            x_range = (0, 1900), 
-            y_range = (0, 1200)
+            plot_width = print_width, 
+            plot_height = print_height, 
+            x_range = (0, width), 
+            y_range = (height, 0),
         )
-        fig.line(x = 'x', y = 'y', source=source_city)
+        image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+        fig.add_glyph(src, image)
+        fig.line(x = 'x', y = 'y', source=src, width = 3)
         fig.circle(
             x='x',
             y='y', 
             size = 'fixation_duration', 
             alpha = 0.5,
-            source = source_city
+            source = src
         )
         return fig
 
@@ -142,7 +144,9 @@ def Vis1(doc):
 
     def update():
         new_src = make_dataset()
-        source_city.data = dict(
+        N = new_src.size//9
+        src.data = dict(
+            url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
             x=new_src['MappedFixationPointX'],
             y=new_src['MappedFixationPointY'],
             timestamp=new_src['Timestamp'],
@@ -155,14 +159,20 @@ def Vis1(doc):
     select_city.on_change('value', lambda attr, old, new: update())
     select_user.on_change('value', lambda attr, old, new: update())
 
+    image = PIL.Image.open('static/Visualizations/Stimuli/'+select_city.value)
+    width, height = image.size
+    ratio = width/height
+
+    print_width = int(ratio * 720)
+    print_height = int(720)
+
     #make layout for the graph and selectors
     choices = column(select_city, select_user)
-    city_map = make_plot(source_city)
-    overlay = row(city_map, choices)
+    city_map = make_plot(src)
+    layout = row(city_map, choices)
 
     update()
-    doc.add_root(overlay)
-
+    doc.add_root(layout)
 
 
 @app.route('/vis1', methods=['GET', 'POST'])
@@ -175,7 +185,9 @@ def index_vis1():
 	# show the form, it wasn't submitted
 	with pull_session(url="http://localhost:5007/vis1") as session:
 	    vis_page = 'Scan Path'
-	    vis_text = 'The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'
+	    vis_text = '''The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. 
+            By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, 
+            the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'''
 	    script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
 	    return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
@@ -196,7 +208,11 @@ def index_vis2():
 	# show the form, it wasn't submitted
 	with pull_session(url="http://localhost:5006/vis2") as session:
 		vis_page = 'Time Graph'
-		vis_text = 'The goal of this visualization is to show the user how the x and y position changes with respect to time. The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, the user sees how the y poition of the gazepath changes.'
+		vis_text = '''The goal of this visualization is to show the user how the x and y position changes with respect to time. 
+            The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. 
+            The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, 
+            thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, 
+            the user sees how the y poition of the gazepath changes.'''
 		script = server_session(session_id=session.id, url='http://localhost:5006/vis2')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
 
@@ -205,13 +221,14 @@ def index_vis2():
 def Vis2(doc):
     #load dataset
     df_paths = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
-    df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
+    df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 
+        'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
     #Global Variables
     users = []
     stations = []
 
-    src = ColumnDataSource(data = dict(x=[], y=[], timestamp=[], station=[], user=[]))
+    src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[]))
 
     #Choosing the data we want
     def make_dataset():
@@ -221,26 +238,28 @@ def Vis2(doc):
     #making the plot
     def make_plot(src):
         #Writing X-path
-        p1 = figure(title="X path", plot_width = 400, plot_height = 400)
+        p1 = figure(title="X path", plot_width = print_width, plot_height = print_height, x_range = (0, width))
         p1.grid.grid_line_alpha=0.3
         p1.xaxis.axis_label = 'X'
         p1.yaxis.axis_label = 'Time'
         p1.y_range.flipped = True
-        p1.line(x='x', y='timestamp', source = src)
+        p1.line(x='x', y='timestamp', source = src, width = 3)
 
         #Writing Y-path
-        p2 = figure(title= "Y path", plot_width = 400, plot_height = 400)
+        p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (height, 0))
         p2.grid.grid_line_alpha=0.3
         p2.xaxis.axis_label = 'Time'
         p2.yaxis.axis_label = 'Y'
-        p2.line(x='timestamp', y='y', source = src)
-        
+        p2.line(x='timestamp', y='y', source = src, width = 3)
+    
         #writing general path
-        p3 = figure(title="General Path", plot_width = 400, plot_height = 400)
+        p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, width), y_range = (height, 0))
         p3.grid.grid_line_alpha=0.3
+        image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+        p3.add_glyph(src, image)
         p3.xaxis.axis_label = 'X'
         p3.yaxis.axis_label = 'Y'
-        p3.line(x='x', y='y', source = src)
+        p3.line(x='x', y='y', source = src, width = 3)
         return [p1, p2, p3]
 
     #Select
@@ -258,27 +277,37 @@ def Vis2(doc):
     #Update
     def update():
         new_src = make_dataset()
+        N = new_src.size//9
         src.data = dict(
+            url = ["https://www.jelter.net/stimuli/"+selectStation.value]*N,
             x=new_src['MappedFixationPointX'],
             y=new_src['MappedFixationPointY'],
             timestamp=new_src['Timestamp'],
             station=new_src['StimuliName'],
-            user=new_src['user'],
+            user=new_src['user']
         )
 
     selectStation.on_change('value', lambda attr, old, new: update())
     selectUser.on_change('value', lambda attr, old, new: update())
     selections = [selectStation, selectUser]
 
+    image = PIL.Image.open('static/Visualizations/Stimuli/'+selectStation.value)
+    width, height = image.size
+    ratio = width/height
+
+    print_width = int(ratio * 360)
+    print_height = int(360)
+
     plot = make_plot(src)
 
     widgets = column(*selections, width = 320, height = 200)
-    overlay = layout([
-                    [plot[2], plot[1], widgets],
-                    plot[0]])
+    #layout = layout([
+                    #[plot[2], plot[1], widgets],
+                    #plot[0]])
+    layout = column(row(plot[2], plot[1], widgets), plot[0])
     update()
 
-    doc.add_root(overlay)
+    doc.add_root(layout)
 
 def bk_worker_2():
     server = Server({'/vis2': Vis2}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5006)
@@ -293,7 +322,17 @@ def index_vis3():
         return redirect(url_for('vispage'))
     with pull_session(url="http://localhost:5008/vis3") as session:
         vis_page='Heat Map'
-        vis_text='The idea behind Heat Map is that the user can see a heatmap of a specific user, map, and map color. It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding. All fixation points from each user fo a specific stimuli are added to the map.'# Depending on how many other dots are close to a dot, the dot\'s color changes from blue to red. The denser the dots, the redder the dots will appear. The user can select the image they want to analyse as well as a constant value \(p\). The closeness of a dot is calculated by taking a dot on the screen and making a virtual circle around it. If another dot is in that circle, the closeness value is increased by 1 for both dots. The dots are put onto the graph with an evenly distributed color coding. The radius of the circle is dynamically changed with the input size of the width and height of the image, and a proportion of the image size constant. The user can self select the value of \(p\). The mathematical formula for the radius of the circle is \(\sqrt{w*h*p \over \pi}\), where \(w=width, h=height, p=\)\(wanted\;area\;of\;circle \over area\;of\;image\). If \(p=0.05\), then the area of the circle is \(5\%\) the area of the rectangle.'
+        vis_text='''The idea behind Heat Map is that the user can see a heatmap of a specific user, map, and map color. 
+            It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding. 
+            All fixation points from each user fo a specific stimuli are added to the map.'# Depending on how many other dots are 
+            close to a dot, the dot\'s color changes from blue to red. The denser the dots, the redder the dots will appear. 
+            The user can select the image they want to analyse as well as a constant value \(p\). The closeness of a dot 
+            is calculated by taking a dot on the screen and making a virtual circle around it. If another dot is in that circle, 
+            the closeness value is increased by 1 for both dots. The dots are put onto the graph with an evenly distributed color coding. 
+            The radius of the circle is dynamically changed with the input size of the width and height of the image, and a proportion of the image size constant. 
+            The user can self select the value of \(p\). The mathematical formula for the radius of the circle is \(\sqrt{w*h*p \over \pi}\), 
+            where \(w=width, h=height, p=\)\(wanted\;area\;of\;circle \over area\;of\;image\). If \(p=0.05\), then the area of the 
+            circle is \(5\%\) the area of the rectangle.'''
         script = server_session(session_id=session.id, url="http://localhost:5008/vis3")
         return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
@@ -434,7 +473,10 @@ def index_vis4():
         return redirect(url_for('vispage'))
     with pull_session(url="http://localhost:5009/vis4") as session:
         vis_page='Bar Chart'
-        vis_text='The idea behind this visualization is that you can see...'
+        vis_text='''The goal of this visualization is to show the user what the total time is that a certain stimuli is looked at. 
+            The user can see 4 different graphs. The first graph shows all the colored S1 maps, the second one shows the gray S1 maps, 
+            the third one shows all the colored S2 maps and the fourth one shows all the gray S2 maps. These different maps can be 
+            chosen on the right side of the graphs.'''
         script = server_session(session_id=session.id, url='http://localhost:5009/vis4')
         return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
 
@@ -442,7 +484,8 @@ def index_vis4():
 def Vis4(doc):
     #Reading csv file
     df_map = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
-    df_map = df_map.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
+    df_map = df_map.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 
+        'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
     #Making data frames
     df_map_S1 = df_map[df_map['StimuliName'].str.contains("S1")]
