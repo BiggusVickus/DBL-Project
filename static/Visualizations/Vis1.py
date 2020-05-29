@@ -18,7 +18,10 @@ import numpy as np
 df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 
 #create ColumnDataSource
-src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
+df_ok = pd.DataFrame({'color':[], 'url':[], 'x':[], 'y':[], 'timestamp':[], 'station':[], 'user':[], 'fixation_duration':[]})
+src = ColumnDataSource(df_ok
+    #data = dict(color=[], url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[])
+    )
 
 #Global variables
 stations = []
@@ -47,7 +50,7 @@ select_user = Select(
     options = users
 )
 
-graph_color = ColorPicker(color = "#14a33a", title = 'Choose color of the scan path')
+select_color = ColorPicker(color = '#ff4466', title = "Choose color of graph")
 
 #create figure with background and graph (scanpath)
 def make_plot(src):
@@ -56,8 +59,7 @@ def make_plot(src):
         plot_width = print_width, 
         plot_height = print_height, 
         x_range = (0, width), 
-        y_range = (height, 0),
-        color = graph_color.value
+        y_range = (height, 0)
     )
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     fig.add_glyph(src, image)
@@ -69,7 +71,7 @@ def make_plot(src):
         alpha = 0.5,
         source = src,
         line_width = 3,
-        color = graph_color.value
+        color = 'color'
     )
     return fig
 
@@ -83,6 +85,7 @@ def update():
     new_src = make_dataset()
     N = new_src.size//9
     src.data = dict(
+        color = select_color.color,
         url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
         x=new_src['MappedFixationPointX'],
         y=new_src['MappedFixationPointY'],
@@ -95,7 +98,7 @@ def update():
 #update graph on selected changes
 select_city.on_change('value', lambda attr, old, new: update())
 select_user.on_change('value', lambda attr, old, new: update())
-graph_color.on_change('value', lambda attr, old, new: update())
+select_color.on_change('color', lambda attr, old, new: update())
 
 #get image and its properties
 image = PIL.Image.open('Stimuli/'+select_city.value)
@@ -106,7 +109,7 @@ print_width = int(ratio * 720)
 print_height = int(720)
 
 #make layout for the graph and selectors
-choices = column(select_city, select_user, graph_color)
+choices = column(select_city, select_user, select_color)
 city_map = make_plot(src)
 layout = row(city_map, choices)
 
