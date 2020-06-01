@@ -2,7 +2,7 @@ import numpy as np  # import auxiliary library, typical idiom
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from bokeh.layouts import gridplot
+from bokeh.layouts import gridplot, widgetbox, row
 from bokeh.plotting import figure, output_file, show, curdoc
 from bokeh.io import output_file, show
 from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, FactorRange, Button, HoverTool, CDSView, GroupFilter, CheckboxGroup
@@ -122,11 +122,11 @@ checkbox_group = CheckboxGroup(
 
 
 def make_dataset_1():
-    plot_data_S1_color = S1_color[(S1_color['StimuliName'] == Stations_S1_Color)].copy()
+    plot_data_S1_color = S1_color[(S1_color['StimuliName'] == checkbox_group.active)].copy()
     return plot_data_S1_color
 
 def make_dataset_2():
-    plot_data_S1_gray = S1_gray[(S1_gray['StimuliName'] == select_city_2.value)].copy()
+    plot_data_S1_gray = S1_gray[(S1_gray['StimuliName'] == Stations_S1_Color)].copy()
     return plot_data_S1_gray
 
 def make_dataset_3():
@@ -137,7 +137,7 @@ def make_dataset_4():
     plot_data_S2_gray = S2_gray[(S2_gray['StimuliName'] == select_city_4.value)].copy()
     return plot_data_S2_gray
 
-        
+      
 fig1 = figure(
     x_range = list_1,
     y_range = (0,750000),
@@ -158,7 +158,6 @@ fig1.add_tools(HoverTool(
 ))
 
 bars = [bar]
-
 
 def make_plot_2(src):
     fig2 = figure(
@@ -206,7 +205,7 @@ def make_plot_4(src):
     return [fig4]
 
 #Update
-def update_1(new):
+def update_1(attr, old, new):
     new_src = make_dataset_1()
     source_city_1.data = dict(
         x=new_src['StimuliName'],
@@ -214,7 +213,7 @@ def update_1(new):
         fixation_duration=new_src['FixationDuration']
     )
 
-def update_2():
+def update_2(attr, old, new):
     new_src_2 = make_dataset_2()
     source_city_2.data = dict(
         x=new_src_2['StimuliName'],
@@ -238,31 +237,28 @@ def update_4():
         fixation_duration=new_src_4['FixationDuration']
     )
 
-def update_11(new):
-    cb_1 = checkbox_group.active
-    for x in range(len(bars)):
-        if x in cb_1:
-            bars[x].visible = True
-        else:
-            bars[x].visible = False
+#def update_11(attr, old, new):
+    
 
 
 #select_city_1.on_change('value', lambda attr, old, new: update_1())
-select_city_2.on_change('value', lambda attr, old, new: update_2())
+#select_city_2.on_change('value', lambda attr, old, new: update_2())
 select_city_3.on_change('value', lambda attr, old, new: update_3())
 select_city_4.on_change('value', lambda attr, old, new: update_4())
 
-checkbox_group.on_click(update_11)
+checkbox_group.on_change('active',update_2)
 
-#select_city_5.on_click(change_click_1)
-#select_city_5.on_change('value', lambda attr, old, new: update_1() & update_2())
-
-selection_1 = [select_city_1]
-selection_2 = [select_city_2]
+#selection_1 = [select_city_1]
+#selection_2 = [select_city_2]
 selection_3 = [select_city_3]
 selection_4 = [select_city_4]
 
 selection_6 = [checkbox_group]
+
+#select_all = Button(label="select all")
+#select_all.on_click(update_11())
+
+#selection_7 = [select_all]
 
 #plot_1 = make_plot_1(source_city_1)
 plot_2 = make_plot_2(source_city_2)
@@ -273,9 +269,9 @@ widget_1_2 = column(*selection_6, width = 320, height = 200)
 widget_3_4 = column(*selection_3, *selection_4, width = 320, height = 200)
 
 layout = layout([
-                [fig1, plot_2[0], widget_1_2],
+                [plot_2[0], widget_1_2],
                 [plot_3[0], plot_4[0], widget_3_4]
 ])
 
-update_1, update_2(), update_3(), update_4()
+update_1, update_2, update_3(), update_4()
 curdoc().add_root(layout)
