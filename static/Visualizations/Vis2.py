@@ -15,8 +15,12 @@ sns.set()  # set Seaborn defaults
 
 #load dataset
 df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
+<<<<<<< HEAD
+df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
+=======
 df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 
     'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
+>>>>>>> 5a451d266458172c5125f9ad11e8300afec10170
 
 #Global Variables
 users = []
