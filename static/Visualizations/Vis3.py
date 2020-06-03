@@ -31,19 +31,17 @@ df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 #Global Variables
 stations = []
 
-src = ColumnDataSource(data = dict(url = [], x=[], y=[], timestamp=[], station=[], user=[], closeness=[]))
+src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], closeness=[]))
+#src2 = ColumnDataSource(data = dict(alp_=alp, dia_=dia))
 
 df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 
                             'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
-
-
-###########################commented out dia and replaced with math formula, same with dia2
 alp = 0.5 #transparency
-#dia = 15 #size of circles
-p_val = 0.05
-dia = sqrt((p_val * width * height) / (math.Pi))
-dia2 = (p_val * width * height) / (math.Pi)
+dia = 15 #size of circles
+dia2 = dia**2
+p_val = 0.001
+
 ###########################
 
 #Choosing the data we want
@@ -108,9 +106,12 @@ selectClose = Slider(title="Select the closeness value", start=0, end=1, value=0
 callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose),
                     code="""
     const data = source.data;
-    const alp_= alpha.value;
-    const dia = size.value;
+    const alp_selected = alpha.value;
+    const dia_selected = size.value;
     const p_val = close.value;
+
+    alp = alp_selected;
+    dia = dia_selected;
 
     source.change.emit();
 """)
@@ -139,26 +140,30 @@ selections = [selectStation]
 image = PIL.Image.open('Stimuli/' + selectStation.value)
 width, height = image.size
 
+#dia = math.sqrt((p_val * width * height) / 3.14159)
+#dia2 = (p_val * width * height) / 3.14159
+
 ratio = width/height
 
 print_width = int(ratio * 720)
 print_height = int(720)
 
 ########hopefully this adds hoverable tooltips
-TOOLTIPS = hover.tooltips = [
-    ("(x,y)", "(@x, @y)"),
-    ("radius", "@radius")
-    ("timestamp", "@timestamp")
-    ("user", "@user")
-]
+#TOOLTIPS = hover.tooltips = [
+#    ("(x,y)", "(@x, @y)"),
+#    ("radius", "@radius")
+#    ("timestamp", "@timestamp")
+#    ("user", "@user")
+#]
 
 widgets = column(selectStation)
 plot = make_plot(src)
+
 #########hopefully adds lassoselect as a tool that displays only a subset of users that have been selected
-plot.add_tools(LassoSelectTool('@user'))
+#plot.add_tools(LassoSelectTool('@user'))
 
 #########supposed to add the TOOLTIPS when hovering
 layout = row(plot, 
-             column( widgets, selectAlpha, selectSize, selectClose), tooltips = TOOLTIPS)
+             column( widgets, selectAlpha, selectSize, selectClose)) #, tooltips = TOOLTIPS)
 update()
 curdoc().add_root(layout)
