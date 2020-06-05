@@ -37,24 +37,31 @@ import glob
 from bokeh.transform import dodge
 from math import pi
 
-UPLOAD_FOLDER = './static/Visualizations/Uploads'
+#app settings
+UPLOAD_FOLDER_PNG = './static/Visualizations/Stimuli'
+UPLOAD_FOLDER_CSV = './static/Visualizations/Uploads'
 app = Flask(__name__)
 app.secret_key = "secret key"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER_PNG'] = UPLOAD_FOLDER_PNG
+app.config['UPLOAD_FOLDER_CSV'] = UPLOAD_FOLDER_CSV
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+ALLOWED_EXTENSIONS_PNG = set(['png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS_CSV = set(['csv'])
 
+def allowed_file_PNG(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_PNG
 
-ALLOWED_EXTENSIONS = set(['csv', 'png', 'jpg', 'jpeg'])
+def allowed_file_CSV(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_CSV
 
-def allowed_file(filename):
-	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-	
+#randomly selects a colored image from /static/Stimuli then passes it onto  the html page
 @app.route('/')
 def upload_form():
-	image_list = [name for name in glob.glob('static/Visualizations/Stimuli/*[0-9]_*')]
+	image_list = [name for name in glob.glob('static/Stimuli/*[0-9]_*')]
 	image_for_background = str(image_list[random.randint(0, len(image_list)-1)])
 	return render_template('index.html', image_for_background = image_for_background)
 
+	#does the upload function, absolutely dont touch or else it breaks
 @app.route('/', methods=['POST'])
 def upload_file():
 	if request.method == 'POST':
@@ -64,9 +71,12 @@ def upload_file():
 			return redirect(request.url)
 		files = request.files.getlist('files[]')
 		for file in files:
-			if file and allowed_file(file.filename):
-				filename = secure_filename(file.filename)
-				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			if file and allowed_file_CSV(file.filename):
+				filename_CSV = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER_CSV'], filename_CSV))
+			elif file and allowed_file_PNG(file.filename):
+				filename_PNG = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER_PNG'], filename_PNG))
 			else:
 				flash('Allowed file types are csv, png, jpg, and jpeg')
 		flash('File(s) successfully uploaded')
@@ -82,6 +92,7 @@ def index_home():
 		return redirect(url_for('index'))
 	# show the form, it wasn't submitted
 	return render_template('index.html')
+
 
 def Vis1(doc):
     #read csv file
