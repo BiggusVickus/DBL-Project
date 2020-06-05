@@ -8,19 +8,25 @@ from werkzeug.utils import secure_filename
 from flask.helpers import url_for
 
 #DON'T TOUCH, app settings
-UPLOAD_FOLDER = 'static/Uploads'
+
+UPLOAD_FOLDER_PNG = 'static/UploadsImages'
+UPLOAD_FOLDER_CSV = 'static/UploadsCSV'
+
 app = Flask(__name__)
 app.secret_key = "secret key"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['UPLOAD_FOLDER_PNG'] = UPLOAD_FOLDER_PNG
+app.config['UPLOAD_FOLDER_CSV'] = UPLOAD_FOLDER_CSV
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
-
 #Remove pdf later
-ALLOWED_EXTENSIONS = set(['csv', 'png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS_PNG = set(['png', 'jpg', 'jpeg'])
+ALLOWED_EXTENSIONS_CSV = set(['csv'])
 
-def allowed_file(filename):
-	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS 
+def allowed_file_PNG(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_PNG
 
-	
+def allowed_file_CSV(filename):
+	return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS_CSV
+
 #randomly selects a colored image from /static/Stimuli then passes it onto  the html page
 @app.route('/')
 def upload_form():
@@ -29,7 +35,6 @@ def upload_form():
 	return render_template('index.html', image_for_background = image_for_background)
 
 	#does the upload function, absolutely dont touch or else it breaks
-
 @app.route('/', methods=['POST'])
 def upload_file():
 	if request.method == 'POST':
@@ -39,9 +44,12 @@ def upload_file():
 			return redirect(request.url)
 		files = request.files.getlist('files[]')
 		for file in files:
-			if file and allowed_file(file.filename):
-				filename = secure_filename(file.filename)
-				file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			if file and allowed_file_CSV(file.filename):
+				filename_CSV = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER_CSV'], filename_CSV))
+			elif file and allowed_file_PNG(file.filename):
+				filename_PNG = secure_filename(file.filename)
+				file.save(os.path.join(app.config['UPLOAD_FOLDER_PNG'], filename_PNG))
 			else:
 				flash('Allowed file types are csv, png, jpg, and jpeg')
 		flash('File(s) successfully uploaded')
