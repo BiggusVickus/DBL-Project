@@ -9,8 +9,8 @@ from flask.helpers import url_for
 
 #DON'T TOUCH, app settings
 
-UPLOAD_FOLDER_PNG = 'static/UploadsImages'
-UPLOAD_FOLDER_CSV = 'static/UploadsCSV'
+UPLOAD_FOLDER_PNG = './static/Visualizations/Stimuli'
+UPLOAD_FOLDER_CSV = './static/Visualizations/Uploads'
 
 app = Flask(__name__)
 app.secret_key = "secret key"
@@ -56,7 +56,6 @@ def upload_file():
 		return redirect(request.url)
 		
 
-#part of the homepage
 @app.route('/', methods=['GET', 'POST'])
 def index_home():
 	if request.method == 'POST':
