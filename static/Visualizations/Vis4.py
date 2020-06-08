@@ -237,9 +237,6 @@ def update_4():
         fixation_duration=new_src_4['FixationDuration']
     )
 
-#def update_11(attr, old, new):
-    
-
 
 #select_city_1.on_change('value', lambda attr, old, new: update_1())
 #select_city_2.on_change('value', lambda attr, old, new: update_2())
@@ -254,11 +251,6 @@ selection_3 = [select_city_3]
 selection_4 = [select_city_4]
 
 selection_6 = [checkbox_group]
-
-#select_all = Button(label="select all")
-#select_all.on_click(update_11())
-
-#selection_7 = [select_all]
 
 #plot_1 = make_plot_1(source_city_1)
 plot_2 = make_plot_2(source_city_2)
