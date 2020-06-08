@@ -83,12 +83,10 @@ def make_plot(src):
     #the color should already be in '' thus it sees 'color' as the color instead of the CDS color
     fig.line(x = 'x', y = 'y', width = 3, alpha = 1, source = src) 
     fig.circle(
-        x='x',
-        y='y', 
+        x='x', y='y', 
         size = 'fixation_duration', 
         alpha = 0.5,
-        source = src,
-        line_width = 3,
+        source = src, line_width = 3,
         #color = 'color'
     )
     tooltips = [
@@ -99,7 +97,11 @@ def make_plot(src):
     return fig
 
 def make_dataset():
-    plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
+    if select_user.value == 'all':
+        plot_data = df_map[(df_map['StimuliName'] == select_city.value)].copy()
+        #plot_data = plot_data.groupby('user')
+    else:
+        plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
     plot_data['opacity_l'] = line_opacity.value
     plot_data['opacity_c'] = circle_opacity.value
     plot_data['color'] = select_color.value
@@ -108,7 +110,7 @@ def make_dataset():
 #update data with new dataframe for new input (selection)
 def update():
     new_src = make_dataset()
-    N = new_src.size//9
+    N = len(new_src.index) #IMPORTANT
     src.data = dict(
         opacity_l = new_src['opacity_l'],
         opacity_c = new_src['opacity_c'],
@@ -126,6 +128,8 @@ def update():
 select_city.on_change('value', lambda attr, old, new: update())
 select_user.on_change('value', lambda attr, old, new: update())
 select_color.on_change('value', lambda attr, old, new: update())
+line_opacity.on_change('value', lambda attr, old, new: update())
+circle_opacity.on_change('value', lambda attr, old, new: update())
 
 #get image and its properties
 image = PIL.Image.open('Stimuli/'+select_city.value)
