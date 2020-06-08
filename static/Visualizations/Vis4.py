@@ -5,7 +5,7 @@ import seaborn as sns
 from bokeh.layouts import gridplot
 from bokeh.plotting import figure, output_file, show, curdoc
 from bokeh.io import output_file, show
-from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL
+from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, HoverTool
 from bokeh.layouts import column, row, WidgetBox, layout
 from bokeh.models.callbacks import CustomJS
 from bokeh.transform import dodge
@@ -125,11 +125,15 @@ def make_plot_1(src):
         plot_width = 500,
         plot_height = 500
     )
-    fig1.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_1, color = "red", legend_label = "color")
+    bar = fig1.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_1, color = "red", legend_label = "color")
     fig1.xaxis.axis_label = 'City'
     fig1.yaxis.axis_label = 'Total Time'
     fig1.xaxis.major_label_orientation = pi/3
     fig1.xgrid.grid_line_color = None
+    tooltips=[
+        ("Total Time", "@fixation_duration")
+        #("p1","@dsfdf")
+    ], renderers=[bar]
     return [fig1]
 
 def make_plot_2(src):
