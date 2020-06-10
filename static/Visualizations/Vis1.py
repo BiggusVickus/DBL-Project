@@ -102,8 +102,8 @@ def make_dataset():
         #plot_data = plot_data.groupby('user')
     else:
         plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
-    plot_data['opacity_l'] = line_opacity.value
-    plot_data['opacity_c'] = circle_opacity.value
+    plot_data['opacity_l'] = int(line_opacity.value)
+    plot_data['opacity_c'] = int(circle_opacity.value)
     plot_data['color'] = select_color.value
     return plot_data
 
@@ -114,7 +114,7 @@ def update():
     src.data = dict(
         opacity_l = new_src['opacity_l'],
         opacity_c = new_src['opacity_c'],
-        #color = select_color.value,
+        #color = new_src['color'],
         url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
         x=new_src['MappedFixationPointX'],
         y=new_src['MappedFixationPointY'],
