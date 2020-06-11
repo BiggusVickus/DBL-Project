@@ -3,7 +3,7 @@
 <title>Eye Tracking Visualization</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<link href="/static/css/faviconV2Y.png" rel="icon" type="image/x-icon" />
+<link href="/static/css/faviconV2Y.ico" rel="icon" type="image/x-icon" />
 <meta http-equiv="X-UA-Compatible" content="ie=edge" />
 <link href="https://fonts.googleapis.com/css?family=Lora:400,700|Montserrat:300" rel="stylesheet">
 <link href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.5.min.css" rel="stylesheet">
@@ -14,6 +14,7 @@
 </nav>
 </head>
 <div class="sidenav">
+	<a href="{{ url_for('index_home') }}">Home</a>
 	<a href="{{ url_for('index_vis1') }}">Scan-Path</a>
 	<a href="{{ url_for('index_vis2') }}">Time Graph</a>
 	<a href="{{ url_for('index_vis3') }}">Heat Map</a>
@@ -31,7 +32,7 @@
 			<h2>Select file(s) to upload</h2>
 			<h3>Please note that it can take up to a minute for visualizations to load and display. </h3>
                 
-			<div>Please select a csv file with accompanying picture(s) to go along with it. Hold ctrl (or cmd) to select multiple files. 
+			<div>Please select a csv file with accompanying picture(s) to go along with it. Hold ctrl (or cmd) to select multiple files. Max 128MB.
 			</div>
 			<p>
 				{% with messages = get_flashed_messages() %}
