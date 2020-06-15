@@ -18,6 +18,7 @@ df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 src = ColumnDataSource(
     data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[])
 )
+#df_map.drop(columns = ['FixationIndex', 'Timestamp', 'description'])
 
 stations = []
 users = []
@@ -48,16 +49,16 @@ def make_plot(src, new_src):
         fig.line(
             x = row['MappedFixationPointX'],
             y = row['MappedFixationPointY'],
-            width = 3, muted_alpha = 0.1,
+            width = 3, alpha = 1, muted_alpha = 0.1,
             legend_label = row['user'],
         )
-        #fig.circle(
-         #   x = row['MappedFixationPointX'],
-          #  y = row['MappedFixationPointY'],
-           # size = row['FixationDuration']/10,
-            #alpha = 0.7, muted_alpha = 0.1,
-            #legend_label = row['user'],
-        #)
+        fig.circle(
+            x = row['MappedFixationPointX'],
+            y = row['MappedFixationPointY'],
+            size = row['FixationDuration']/10,
+            alpha = 0.7, muted_alpha = 0.1,
+            legend_label = row['user'],
+        )
     fig.legend.click_policy = 'mute'
     tooltips = [
         ('Time', '@FixationDuration'),
