@@ -57,6 +57,8 @@ def make_plot(src):
         plot_height = print_height, 
         x_range = (0, width), 
         y_range = (height, 0),
+		x_axis_label = 'x-coordinate of fixation',
+		y_axis_label = 'y-coordinate of fixation'
     )
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     fig.add_glyph(src, image)
