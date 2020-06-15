@@ -26,7 +26,7 @@ src = ColumnDataSource(#df_ok
 
 #Global variables
 stations = []
-users = ["all"]
+users = []
 
 #create city select widget
 for station in df_map['StimuliName']:
@@ -80,14 +80,14 @@ def make_plot(src):
     )
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     fig.add_glyph(src, image)
-    #the color should already be in '' thus it sees 'color' as the color instead of the CDS color
-    fig.line(x = 'x', y = 'y', width = 3, alpha = 1, source = src) 
+    fig.line(x = 'x', y = 'y', width = 3, 
+        alpha = 1, source = src, 
+    ) 
     fig.circle(
         x='x', y='y', 
         size = 'fixation_duration', 
         alpha = 0.5,
         source = src, line_width = 3,
-        #color = 'color'
     )
     tooltips = [
         ('Time', '@FixationDuration'),
