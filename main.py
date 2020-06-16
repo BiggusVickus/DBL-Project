@@ -134,6 +134,8 @@ def Vis1(doc):
 			plot_height = print_height, 
 			x_range = (0, width), 
 			y_range = (height, 0),
+			x_axis_label = 'x-coordinate of fixation',
+			y_axis_label = 'y-coordinate of fixation'
 		)
 		image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
 		fig.add_glyph(src, image)
@@ -194,9 +196,10 @@ def index_vis1():
 	# show the form, it wasn't submitted
 	with pull_session(url="http://localhost:5007/vis1") as session:
 		vis_page = 'Scan Path'
-		vis_text = '''The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. 
-			By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, 
-			the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'''
+		vis_text = '''The concept of this visualization is to show where a user looks, for how long, and at how many different locations they look.
+		The circles in the graph represent the duration of the fixation by the user, so the larger the circle, the longer the user looked at that point.
+		On the right of the graph there are two selector widgets, one for the map and one for the user. By selecting different entries,
+		you can see the different paths per map and per user.'''
 		script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
