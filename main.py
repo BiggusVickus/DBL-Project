@@ -57,7 +57,7 @@ def allowed_file_PNG(filename):
 	
 @app.route('/')
 def upload_form():
-	image_list = [name for name in glob.glob('static/Metro-Maps/*[0-9]_*')]
+	image_list = [name for name in glob.glob('static/Metro-Maps/*')]
 	image_for_background = str(image_list[random.randint(0, len(image_list)-1)])
 	return render_template('index.html', image_for_background = image_for_background)
 
@@ -334,14 +334,9 @@ def index_vis3():
 		vis_text='''The idea behind Heat Map is that the user can see a heatmap of a specific user, map, and map color. 
 			It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding. 
 			All fixation points from each user fo a specific stimuli are added to the map.'# Depending on how many other dots are 
-			close to a dot, the dot\'s color changes from blue to red. The denser the dots, the redder the dots will appear. 
-			The user can select the image they want to analyse as well as a constant value \(p\). The closeness of a dot 
+			close to a dot, the dot\'s color changes from blue to red. The denser the dots, the more red the dots will appear.  The closeness of a dot 
 			is calculated by taking a dot on the screen and making a virtual circle around it. If another dot is in that circle, 
-			the closeness value is increased by 1 for both dots. The dots are put onto the graph with an evenly distributed color coding. 
-			The radius of the circle is dynamically changed with the input size of the width and height of the image, and a proportion of the image size constant. 
-			The user can self select the value of \(p\). The mathematical formula for the radius of the circle is \(\sqrt{w*h*p \over \pi}\), 
-			where \(w=width, h=height, p=\)\(wanted\;area\;of\;circle \over area\;of\;image\). If \(p=0.05\), then the area of the 
-			circle is \(5\%\) the area of the rectangle.'''
+			the closeness value is increased by 1 for both dots. '''
 		script = server_session(session_id=session.id, url="http://localhost:5008/vis3")
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
