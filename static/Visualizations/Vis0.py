@@ -18,7 +18,7 @@ df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 src = ColumnDataSource(
     data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[])
 )
-#df_map.drop(columns = ['FixationIndex', 'Timestamp', 'description'])
+df_map.drop(columns = ['Timestamp', 'FixationIndex', 'description'])
 
 stations = []
 users = []
@@ -27,6 +27,10 @@ for station in df_map['StimuliName']:
     stations.append(station)
 #to remove duplicates
 stations = list(dict.fromkeys(stations))
+
+for user in df_map['user']:
+    users.append(user)
+users = list(dict.fromkeys(users))
 
 select_city = Select(
     title = 'Choose city', 
@@ -49,8 +53,9 @@ def make_plot(src, new_src):
         fig.line(
             x = row['MappedFixationPointX'],
             y = row['MappedFixationPointY'],
-            width = 3, alpha = 1, muted_alpha = 0.1,
-            legend_label = row['user'],
+            alpha = 1,
+            width = 3, muted_alpha = 0.1,
+            legend_label = str(users),
         )
         fig.circle(
             x = row['MappedFixationPointX'],
