@@ -16,18 +16,19 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='css/vispage.css') }}">
 </head>
 <div class="sidenav">
-	<a href="{{ url_for('index_home') }}">Home</a>
-	<a href="{{ url_for('index_vis1') }}">Scan-Path</a>
-	<a href="{{ url_for('index_vis2') }}">Time Graph</a>
-	<a href="{{ url_for('index_vis3') }}">Heat Map</a>
-	<a href="{{ url_for('index_vis4') }}">Bar Chart</a>
+    <a href="{{ url_for('index_home') }}">Home</a>
+    <a href="{{ url_for('index_vis1') }}">Scan-Path</a>
+    <a href="{{ url_for('index_vis2') }}">Time Graph</a>
+    <a href="{{ url_for('index_vis3') }}">Heat Map</a>
+    <a href="{{ url_for('index_vis4') }}">Bar Chart</a>
 </div>
 <!-- The {{_}} takes in different inputs (see main.py), and the vis_page/vis_text variable are passed to the {{vis_page}} and {{vis_text}} based on what page you are on. Limits repetivity of code. -->
 <div class="main">
-	<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Track</a><a href="{{ url_for('start_crying') }}">i</a><a href="{{ url_for('index_home') }}">ng Visualization Tool</a></h1>
-	<h2>{{ vis_page }}</h2>
+    <h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Track</a><a href="{{ url_for('start_crying') }}">i</a><a href="{{ url_for('index_home') }}">ng Visualization Tool</a></h1>
+    <h2>{{ vis_page }}</h2>
 	<div>{{ vis_text }}</div>
-	{{script|safe}}
+	<audio controls autoplay>
+		<source src="static/Stimuli/crying/13_Budapest_S1.mp3" type="audio/mpeg">
+	</audio>
 </div>
-
 </html>

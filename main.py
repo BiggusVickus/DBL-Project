@@ -57,7 +57,7 @@ def allowed_file_PNG(filename):
 	
 @app.route('/')
 def upload_form():
-	image_list = [name for name in glob.glob('static/Metro-Maps/*')]
+	image_list = [name for name in glob.glob('static/Metro-Maps/*.jpg')]
 	image_for_background = str(image_list[random.randint(0, len(image_list)-1)])
 	return render_template('index.html', image_for_background = image_for_background)
 
@@ -327,6 +327,17 @@ def bk_worker_2():
 	server.io_loop.start()
 
 Thread(target=bk_worker_2).start()
+
+@app.route('/reflection', methods = ['GET', 'POST'])
+def start_crying():
+    if request.method=='POST':
+        return redirect(url_for('vispage'))
+    vis_page = 'Our reflection on our project'
+    vis_text = 'Congratulations you found our little Easter egg. Out of all the letters in the title, you decided to click on the i. Turn up the volume, but not too loud, and press play to hear a reflection of our project.'
+    return render_template('project_reflection.html', vis_page = vis_page, vis_text = vis_text)
+
+
+
 
 @app.route('/vis3', methods=['GET', 'POST'])
 def index_vis3():
