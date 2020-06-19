@@ -20,7 +20,7 @@ df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 
 #create ColumnDataSource
 #df_ok = pd.DataFrame({'color':[], 'url':[], 'x':[], 'y':[], 'timestamp':[], 'station':[], 'user':[], 'fixation_duration':[]})
-src = ColumnDataSource(#df_ok
+src = ColumnDataSource(
     data = dict(opacity_l=[], opacity_c=[], color=[], url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[])
     )
 
@@ -51,24 +51,6 @@ select_user = Select(
     options = users
 )
 
-select_color = Select(
-    title = 'Choose color of graph',
-    options = ['steelblue', 'darkgreen', 'gold', 'darkorange', 'red'],
-    value = 'darkgreen'
-)
-
-line_opacity = Slider(
-    title = 'Opacity of line',
-    value = 0.7, step = 0.1,
-    start = 0, end = 1
-)
-
-circle_opacity = Slider(
-    title = 'Opacity of circles',
-    value = 0.5, step = 0.1,
-    start = 0, end = 1
-)
-
 #create figure with background and graph (scanpath)
 def make_plot(src):
     fig = figure(
@@ -78,43 +60,36 @@ def make_plot(src):
         x_range = (0, width), 
         y_range = (height, 0)
     )
-    image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+    image = ImageURL(url = "url", x=0, y=0, w=width, h=height, global_alpha = 0.7)
     fig.add_glyph(src, image)
     fig.line(x = 'x', y = 'y', width = 3, 
-        alpha = 1, source = src, 
+        alpha = 1, source = src, line_color = 'navy',
+        muted_alpha = 0.1, legend_label = 'Dis-/Enable Path'
     ) 
     fig.circle(
         x='x', y='y', 
         size = 'fixation_duration', 
-        alpha = 0.5,
+        alpha = 0.6, muted_alpha = 0.1,
         source = src, line_width = 3,
+        color = 'navy', legend_label = 'Dis-/Enable Path'
     )
     tooltips = [
-        ('Time', '@FixationDuration'),
+        ('Time', '@fixaiton_duration'),
         ('Coordinates', '($x, $y)')
     ]
+    fig.legend.click_policy = 'mute'
     fig.add_tools(HoverTool(tooltips = tooltips))
     return fig
 
 def make_dataset():
-    if select_user.value == 'all':
-        plot_data = df_map[(df_map['StimuliName'] == select_city.value)].copy()
-        #plot_data = plot_data.groupby('user')
-    else:
-        plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
-    plot_data['opacity_l'] = int(line_opacity.value)
-    plot_data['opacity_c'] = int(circle_opacity.value)
-    plot_data['color'] = select_color.value
+    plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
     return plot_data
 
 #update data with new dataframe for new input (selection)
 def update():
     new_src = make_dataset()
-    N = len(new_src.index) #IMPORTANT
+    N = len(new_src.index)
     src.data = dict(
-        opacity_l = new_src['opacity_l'],
-        opacity_c = new_src['opacity_c'],
-        #color = new_src['color'],
         url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
         x=new_src['MappedFixationPointX'],
         y=new_src['MappedFixationPointY'],
@@ -127,9 +102,6 @@ def update():
 #update graph on selected changes
 select_city.on_change('value', lambda attr, old, new: update())
 select_user.on_change('value', lambda attr, old, new: update())
-select_color.on_change('value', lambda attr, old, new: update())
-line_opacity.on_change('value', lambda attr, old, new: update())
-circle_opacity.on_change('value', lambda attr, old, new: update())
 
 #get image and its properties
 image = PIL.Image.open('Stimuli/'+select_city.value)
@@ -140,7 +112,7 @@ print_width = int(ratio * 720)
 print_height = int(720)
 
 #make layout for the graph and selectors
-choices = column(select_city, select_user, select_color, line_opacity, circle_opacity)
+choices = column(select_city, select_user)
 city_map = make_plot(src)
 layout = row(city_map, choices)
 
