@@ -14,7 +14,7 @@ import seaborn as sns
 from bokeh.layouts import gridplot
 from bokeh.plotting import figure, output_file, show, curdoc
 from bokeh.io import output_file, show
-from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, Slider, Grid, LinearAxis, Plot
+from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, Slider, Grid, LinearAxis, Plot, HoverTool
 from bokeh.models import Range1d, ColorBar, LinearColorMapper, LogColorMapper, LogTicker, Div, Select, Slider, TextInput
 from bokeh.layouts import column, row, WidgetBox, layout
 from bokeh.models.callbacks import CustomJS
@@ -94,10 +94,11 @@ def index_home():
 
 def Vis1(doc):
 	#read csv file
-	df_map = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
+	df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 
-	#create ColumnDataSource
-	src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
+	src = ColumnDataSource(
+    	data = dict(opacity_l=[], opacity_c=[], color=[], url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[])
+    )
 
 	#Global variables
 	stations = []
@@ -110,9 +111,9 @@ def Vis1(doc):
 	stations = list(dict.fromkeys(stations))
 
 	select_city = Select(
-		title = 'Choose city', 
-		value = '01_Antwerpen_S1.jpg', 
-		options = stations
+    	title = 'Choose city', 
+    	value = '01_Antwerpen_S1.jpg', 
+    	options = stations
 	)
 
 	#create user select widget
@@ -121,54 +122,65 @@ def Vis1(doc):
 	users = list(dict.fromkeys(users))
 
 	select_user = Select(
-		title = 'Choose user',
-		value = 'p1',
-		options = users
+    	title = 'Choose user',
+    	value = 'p1',
+    	options = users
 	)
 
-	#create figure and graph (scanpath)
+	#create figure with background and graph (scanpath)
 	def make_plot(src):
 		fig = figure(
-			title='Scanpath', 
-			plot_width = print_width, 
-			plot_height = print_height, 
-			x_range = (0, width), 
-			y_range = (height, 0),
-		)
-		image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+        	title='Scanpath', 
+        	plot_width = print_width, 
+        	plot_height = print_height, 
+        	x_range = (0, width), 
+        	y_range = (height, 0)
+    	)
+    	image = ImageURL(url = "url", x=0, y=0, w=width, h=height, global_alpha = 0.7)
 		fig.add_glyph(src, image)
-		fig.line(x = 'x', y = 'y', source=src, width = 3)
+		fig.line(x = 'x', y = 'y', width = 3, 
+        	alpha = 1, source = src, line_color = 'navy',
+        	muted_alpha = 0.1, legend_label = 'Dis-/Enable Path'
+    	) 
 		fig.circle(
-			x='x',
-			y='y', 
-			size = 'fixation_duration', 
-			alpha = 0.5,
-			source = src
-		)
+        	x='x', y='y', 
+        	size = 'fixation_duration', 
+        	alpha = 0.6, muted_alpha = 0.1,
+        	source = src, line_width = 3,
+        	color = 'navy', legend_label = 'Dis-/Enable Path'
+    	)
+    	tooltips = [
+        	('Time', '@fixaiton_duration'),
+        	('Coordinates', '($x, $y)')
+    	]
+    	fig.legend.click_policy = 'mute'
+		fig.add_tools(HoverTool(tooltips = tooltips))
 		return fig
 
 	def make_dataset():
 		plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
 		return plot_data
 
+	#update data with new dataframe for new input (selection)
 	def update():
 		new_src = make_dataset()
-		N = new_src.size//9
-		src.data = dict(
-			url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
+		N = len(new_src.index)
+    	src.data = dict(
+        	url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
 			x=new_src['MappedFixationPointX'],
-			y=new_src['MappedFixationPointY'],
-			timestamp=new_src['Timestamp'],
-			station=new_src['StimuliName'],
-			user=new_src['user'],
-			fixation_duration=(new_src['FixationDuration']/10)
-		)
+        	y=new_src['MappedFixationPointY'],
+        	timestamp=new_src['Timestamp'],
+        	station=new_src['StimuliName'],
+        	user=new_src['user'],
+        	fixation_duration=(new_src['FixationDuration']/10)
+    	)
 
 	#update graph on selected changes
 	select_city.on_change('value', lambda attr, old, new: update())
 	select_user.on_change('value', lambda attr, old, new: update())
 
-	image = PIL.Image.open('static/Visualizations/Stimuli/'+select_city.value)
+	#get image and its properties
+	image = PIL.Image.open('Stimuli/'+select_city.value)
 	width, height = image.size
 	ratio = width/height
 
@@ -181,7 +193,7 @@ def Vis1(doc):
 	layout = row(city_map, choices)
 
 	update()
-	doc.add_root(layout)
+	curdoc().add_root(layout)
 
 
 @app.route('/vis1', methods=['GET', 'POST'])
@@ -196,7 +208,8 @@ def index_vis1():
 		vis_page = 'Scan Path'
 		vis_text = '''The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. 
 			By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, 
-			the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'''
+			the black and white, both, or none, with a legend of course. The user can then change the maps as they please. The legend in the top right corner
+			of the graph enables the user to hide the graph in order to see the map clearer.'''
 		script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
