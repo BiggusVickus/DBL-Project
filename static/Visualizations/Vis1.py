@@ -1,10 +1,9 @@
 import bokeh as bk 
 from bokeh.plotting import figure, show, curdoc
 from bokeh.io import output_file, output_notebook, show 
-from bokeh.models import ColumnDataSource, Select, RadioButtonGroup, Plot, ImageURL, Slider, ColorPicker, HoverTool
+from bokeh.models import ColumnDataSource, Select, RadioButtonGroup, Plot, ImageURL
 from bokeh.layouts import row, column, gridplot, widgetbox
 from bokeh.models.widgets import Tabs, Panel
-
 import seaborn as sns
 import PIL
 from PIL import Image
@@ -19,10 +18,7 @@ import numpy as np
 df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 
 #create ColumnDataSource
-#df_ok = pd.DataFrame({'color':[], 'url':[], 'x':[], 'y':[], 'timestamp':[], 'station':[], 'user':[], 'fixation_duration':[]})
-src = ColumnDataSource(#df_ok
-    data = dict(opacity_l=[], opacity_c=[], color=[], url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[])
-    )
+src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
 
 #Global variables
 stations = []
@@ -51,70 +47,39 @@ select_user = Select(
     options = users
 )
 
-select_color = Select(
-    title = 'Choose color of graph',
-    options = ['steelblue', 'darkgreen', 'gold', 'darkorange', 'red'],
-    value = 'darkgreen'
-)
+#city = select_city.value
 
-line_opacity = Slider(
-    title = 'Opacity of line',
-    value = 0.7, step = 0.1,
-    start = 0, end = 1
-)
-
-circle_opacity = Slider(
-    title = 'Opacity of circles',
-    value = 0.5, step = 0.1,
-    start = 0, end = 1
-)
-
-#create figure with background and graph (scanpath)
+#create figure and graph (scanpath)
 def make_plot(src):
     fig = figure(
         title='Scanpath', 
         plot_width = print_width, 
         plot_height = print_height, 
         x_range = (0, width), 
-        y_range = (height, 0)
+        y_range = (height, 0),
+		x_axis_label = 'x-coordinate of fixation',
+		y_axis_label = 'y-coordinate of fixation'
     )
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     fig.add_glyph(src, image)
-    fig.line(x = 'x', y = 'y', width = 3, 
-        alpha = 1, source = src, 
-    ) 
+    fig.line(x = 'x', y = 'y', source=src, width = 3)
     fig.circle(
-        x='x', y='y', 
+        x='x',
+        y='y', 
         size = 'fixation_duration', 
         alpha = 0.5,
-        source = src, line_width = 3,
+        source = src
     )
-    tooltips = [
-        ('Time', '@FixationDuration'),
-        ('Coordinates', '($x, $y)')
-    ]
-    fig.add_tools(HoverTool(tooltips = tooltips))
     return fig
 
 def make_dataset():
-    if select_user.value == 'all':
-        plot_data = df_map[(df_map['StimuliName'] == select_city.value)].copy()
-        #plot_data = plot_data.groupby('user')
-    else:
-        plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
-    plot_data['opacity_l'] = int(line_opacity.value)
-    plot_data['opacity_c'] = int(circle_opacity.value)
-    plot_data['color'] = select_color.value
+    plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
     return plot_data
 
-#update data with new dataframe for new input (selection)
 def update():
     new_src = make_dataset()
-    N = len(new_src.index) #IMPORTANT
+    N = new_src.size//9
     src.data = dict(
-        opacity_l = new_src['opacity_l'],
-        opacity_c = new_src['opacity_c'],
-        #color = new_src['color'],
         url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
         x=new_src['MappedFixationPointX'],
         y=new_src['MappedFixationPointY'],
@@ -123,15 +88,12 @@ def update():
         user=new_src['user'],
         fixation_duration=(new_src['FixationDuration']/10)
     )
+    #city = select_city.value
 
 #update graph on selected changes
 select_city.on_change('value', lambda attr, old, new: update())
 select_user.on_change('value', lambda attr, old, new: update())
-select_color.on_change('value', lambda attr, old, new: update())
-line_opacity.on_change('value', lambda attr, old, new: update())
-circle_opacity.on_change('value', lambda attr, old, new: update())
 
-#get image and its properties
 image = PIL.Image.open('Stimuli/'+select_city.value)
 width, height = image.size
 ratio = width/height
@@ -140,7 +102,7 @@ print_width = int(ratio * 720)
 print_height = int(720)
 
 #make layout for the graph and selectors
-choices = column(select_city, select_user, select_color, line_opacity, circle_opacity)
+choices = column(select_city, select_user)
 city_map = make_plot(src)
 layout = row(city_map, choices)
 
