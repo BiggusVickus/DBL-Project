@@ -62,14 +62,14 @@ def make_plot(src):
     )
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     fig.add_glyph(src, image)
-    fig.line(x = 'x', y = 'y', source=src, width = 3)
+    fig.line(x = 'x', y = 'y', source=src, width = 3, color = 'navy', 
+        muted_alpha = 0.1, legend_label = 'Disable/Enable graph')
     fig.circle(
-        x='x',
-        y='y', 
-        size = 'fixation_duration', 
-        alpha = 0.5,
-        source = src
+        x='x', y='y', size = 'fixation_duration', color = 'navy', 
+        muted_alpha = 0.1, legend_label = 'Disable/Enable graph',
+        alpha = 0.5, source = src
     )
+    fig.legend.click_policy = 'mute'
     return fig
 
 def make_dataset():
@@ -88,7 +88,6 @@ def update():
         user=new_src['user'],
         fixation_duration=(new_src['FixationDuration']/10)
     )
-    #city = select_city.value
 
 #update graph on selected changes
 select_city.on_change('value', lambda attr, old, new: update())

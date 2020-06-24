@@ -139,14 +139,14 @@ def Vis1(doc):
 		)
 		image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
 		fig.add_glyph(src, image)
-		fig.line(x = 'x', y = 'y', source=src, width = 3)
+		fig.line(x = 'x', y = 'y', source=src, width = 3, 
+			color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Path')
 		fig.circle(
-			x='x',
-			y='y', 
-			size = 'fixation_duration', 
-			alpha = 0.5,
-			source = src
+			x='x', y='y', size = 'fixation_duration', 
+			alpha = 0.5, color = 'navy', muted_alpha = 0.1, 
+			legend_label = 'Disable/Enable Path', source = src
 		)
+		fig.legend.click_policy = 'mute'
 		return fig
 
 	def make_dataset():
@@ -199,7 +199,8 @@ def index_vis1():
 		vis_text = '''The concept of this visualization is to show where a user looks, for how long, and at how many different locations they look.
 		The circles in the graph represent the duration of the fixation by the user, so the larger the circle, the longer the user looked at that point.
 		On the right of the graph there are two selector widgets, one for the map and one for the user. By selecting different entries,
-		you can see the different paths per map and per user.'''
+		you can see the different paths per map and per user. In the top right corner of the Scan-Path there is an interactive legend,
+		with which you can disable/enable the path to get a clearer look of the map.'''
 		script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
@@ -224,7 +225,8 @@ def index_vis2():
 			The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. 
 			The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, 
 			thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, 
-			the user sees how the y poition of the gazepath changes.'''
+			the user sees how the y poition of the gazepath changes. With the interactive legend in the top right corners, you can disable/enable the graph
+			to get a clearer view of the map itself.'''
 		script = server_session(session_id=session.id, url='http://localhost:5006/vis2')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
 
@@ -255,14 +257,16 @@ def Vis2(doc):
 		p1.xaxis.axis_label = 'X'
 		p1.yaxis.axis_label = 'Time'
 		p1.y_range.flipped = True
-		p1.line(x='x', y='timestamp', source = src, width = 3)
+		p1.line(x='x', y='timestamp', source = src, width = 3, color = 'navy')
+		p1.legend.click_policy = 'mute'
 
 		#Writing Y-path
 		p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (height, 0))
 		p2.grid.grid_line_alpha=0.3
 		p2.xaxis.axis_label = 'Time'
 		p2.yaxis.axis_label = 'Y'
-		p2.line(x='timestamp', y='y', source = src, width = 3)
+		p2.line(x='timestamp', y='y', source = src, width = 3, color = 'navy')
+		p2.legend.click_policy = 'mute'
 	
 		#writing general path
 		p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, width), y_range = (height, 0))
@@ -271,7 +275,8 @@ def Vis2(doc):
 		p3.add_glyph(src, image)
 		p3.xaxis.axis_label = 'X'
 		p3.yaxis.axis_label = 'Y'
-		p3.line(x='x', y='y', source = src, width = 3)
+		p3.line(x='x', y='y', source = src, width = 3, color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Graph')
+		p3.legend.click_policy = 'mute'
 		return [p1, p2, p3]
 
 	#Select
