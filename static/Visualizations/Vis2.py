@@ -14,7 +14,7 @@ from PIL import Image
 sns.set()  # set Seaborn defaults
 
 #load dataset
-df_paths = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
+df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 
     'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
 
@@ -32,28 +32,35 @@ def make_dataset():
 #making the plot
 def make_plot(src):
     #Writing X-path
-    p1 = figure(title="X path", plot_width = print_width, plot_height = print_height, x_range = (0, width))
+    p1 = figure(title="X path", plot_width = print_width, plot_height = print_height, 
+        x_range = (0, width), color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Graph')
     p1.grid.grid_line_alpha=0.3
     p1.xaxis.axis_label = 'X'
     p1.yaxis.axis_label = 'Time'
     p1.y_range.flipped = True
-    p1.line(x='x', y='timestamp', source = src, line_width = 3)
+    p1.line(x='x', y='timestamp', source = src, width = 3)
+    p1.legend.click_policy = 'mute'
 
     #Writing Y-path
-    p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (height, 0))
+    p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, 
+        y_range = (height, 0), color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Graph')
     p2.grid.grid_line_alpha=0.3
     p2.xaxis.axis_label = 'Time'
     p2.yaxis.axis_label = 'Y'
-    p2.line(x='timestamp', y='y', source = src, line_width = 3)
+    p2.line(x='timestamp', y='y', source = src, width = 3)
+    p2.legend.click_policy = 'mute'
     
     #writing general path
-    p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = p1.x_range, y_range = p2.y_range)
+    p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, 
+        x_range = (0, width), y_range = (height, 0), color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Graph')
+
     p3.grid.grid_line_alpha=0.3
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     p3.add_glyph(src, image)
     p3.xaxis.axis_label = 'X'
     p3.yaxis.axis_label = 'Y'
-    p3.line(x='x', y='y', source = src, line_width = 3)
+    p3.line(x='x', y='y', source = src, width = 3)
+    p3.legend.click_policy = 'mute'
     return [p1, p2, p3]
 
 #Select
