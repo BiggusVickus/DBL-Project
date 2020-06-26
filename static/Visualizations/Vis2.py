@@ -14,13 +14,9 @@ from PIL import Image
 sns.set()  # set Seaborn defaults
 
 #load dataset
-df_paths = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
-<<<<<<< HEAD
-df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
-=======
+df_paths = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
 df_paths = df_paths.astype({'Timestamp': int, 'StimuliName': str, 'FixationIndex': float, 'FixationDuration': float, 
     'MappedFixationPointX': int, 'MappedFixationPointY' : int, 'user': str, 'description': str})
->>>>>>> 5a451d266458172c5125f9ad11e8300afec10170
 
 #Global Variables
 users = []
@@ -41,23 +37,23 @@ def make_plot(src):
     p1.xaxis.axis_label = 'X'
     p1.yaxis.axis_label = 'Time'
     p1.y_range.flipped = True
-    p1.line(x='x', y='timestamp', source = src, width = 3)
+    p1.line(x='x', y='timestamp', source = src, line_width = 3)
 
     #Writing Y-path
     p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (height, 0))
     p2.grid.grid_line_alpha=0.3
     p2.xaxis.axis_label = 'Time'
     p2.yaxis.axis_label = 'Y'
-    p2.line(x='timestamp', y='y', source = src, width = 3)
+    p2.line(x='timestamp', y='y', source = src, line_width = 3)
     
     #writing general path
-    p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, width), y_range = (height, 0))
+    p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = p1.x_range, y_range = p2.y_range)
     p3.grid.grid_line_alpha=0.3
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     p3.add_glyph(src, image)
     p3.xaxis.axis_label = 'X'
     p3.yaxis.axis_label = 'Y'
-    p3.line(x='x', y='y', source = src, width = 3)
+    p3.line(x='x', y='y', source = src, line_width = 3)
     return [p1, p2, p3]
 
 #Select
@@ -75,7 +71,7 @@ selectUser = Select(title='User:', value='p1', options=users)
 #Update
 def update():
     new_src = make_dataset()
-    N = new_src.size//9
+    N = new_src.size//8
     src.data = dict(
         url = ["https://www.jelter.net/stimuli/"+selectStation.value]*N,
         x=new_src['MappedFixationPointX'],
@@ -89,7 +85,7 @@ selectStation.on_change('value', lambda attr, old, new: update())
 selectUser.on_change('value', lambda attr, old, new: update())
 selections = [selectStation, selectUser]
 
-image = PIL.Image.open('Stimuli/'+selectStation.value)
+image = PIL.Image.open('static/Visualizations/Stimuli/'+selectStation.value)
 width, height = image.size
 ratio = width/height
 
