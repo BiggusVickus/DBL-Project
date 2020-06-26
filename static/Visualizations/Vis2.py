@@ -53,6 +53,7 @@ def make_plot(src):
     #writing general path
     p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, 
         x_range = (0, width), y_range = (height, 0), color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Graph')
+
     p3.grid.grid_line_alpha=0.3
     image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
     p3.add_glyph(src, image)
@@ -77,7 +78,7 @@ selectUser = Select(title='User:', value='p1', options=users)
 #Update
 def update():
     new_src = make_dataset()
-    N = new_src.size//9
+    N = new_src.size//8
     src.data = dict(
         url = ["https://www.jelter.net/stimuli/"+selectStation.value]*N,
         x=new_src['MappedFixationPointX'],
@@ -91,7 +92,7 @@ selectStation.on_change('value', lambda attr, old, new: update())
 selectUser.on_change('value', lambda attr, old, new: update())
 selections = [selectStation, selectUser]
 
-image = PIL.Image.open('Stimuli/'+selectStation.value)
+image = PIL.Image.open('static/Visualizations/Stimuli/'+selectStation.value)
 width, height = image.size
 ratio = width/height
 

@@ -194,7 +194,7 @@ def index_vis1():
 		# the redirect can be to the same route or somewhere else
 		return redirect(url_for('vispage1'))
 	# show the form, it wasn't submitted
-	with pull_session(url="http://localhost:5007/vis1") as session:
+	with pull_session(url="http://localhost:5008/vis1") as session:
 		vis_page = 'Scan Path'
 		vis_text = '''The concept of this visualization is to show where a user looks, for how long, and at how many different locations they look.
 		The circles in the graph represent the duration of the fixation by the user, so the larger the circle, the longer the user looked at that point.
@@ -205,7 +205,7 @@ def index_vis1():
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
 def bk_worker_1():
-	server = Server({'/vis1': Vis1}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5007)
+	server = Server({'/vis1': Vis1}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5008)
 	server.start()
 	server.io_loop.start()
 
@@ -348,7 +348,7 @@ def start_crying():
 def index_vis3():
 	if request.method == 'POST':
 		return redirect(url_for('vispage'))
-	with pull_session(url="http://localhost:5008/vis3") as session:
+	with pull_session(url="http://localhost:5007/vis3") as session:
 		vis_page='Heat Map'
 		vis_text='''The idea behind Heat Map is that the user can see a heatmap of a specific user, map, and map color. 
 			It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding. 
@@ -356,7 +356,7 @@ def index_vis3():
 			close to a dot, the dot\'s color changes from blue to red. The denser the dots, the more red the dots will appear.  The closeness of a dot 
 			is calculated by taking a dot on the screen and making a virtual circle around it. If another dot is in that circle, 
 			the closeness value is increased by 1 for both dots. '''
-		script = server_session(session_id=session.id, url="http://localhost:5008/vis3")
+		script = server_session(session_id=session.id, url="http://localhost:5007/vis3")
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
 def Vis3(doc):
@@ -465,7 +465,7 @@ def Vis3(doc):
 	doc.add_root(layout)
 
 def bk_worker_3():
-	server = Server({'/vis3': Vis3}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5008)
+	server = Server({'/vis3': Vis3}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5007)
 	server.start()
 	server.io_loop.start()
 
