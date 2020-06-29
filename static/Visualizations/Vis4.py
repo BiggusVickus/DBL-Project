@@ -130,10 +130,10 @@ def make_plot_1(src):
     fig1.yaxis.axis_label = 'Total Time'
     fig1.xaxis.major_label_orientation = pi/3
     fig1.xgrid.grid_line_color = None
-    tooltips=[
-        ("Total Time", "@fixation_duration")
-        #("p1","@dsfdf")
-    ], renderers=[bar]
+    fig1.add_tools(HoverTool(
+        tooltips=[
+            ("Total Time", "@fixation_duration")
+        ], renderers=[bar]))
     return [fig1]
 
 def make_plot_2(src):
@@ -144,11 +144,15 @@ def make_plot_2(src):
         plot_width = 500,
         plot_height = 500
     )
-    fig2.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_2, color = "blue", legend_label = "gray")
+    bar = fig2.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_2, color = "blue", legend_label = "gray")
     fig2.xaxis.axis_label = 'City'
     fig2.yaxis.axis_label = 'Total Time'
     fig2.xaxis.major_label_orientation = pi/3
     fig2.xgrid.grid_line_color = None
+    fig2.add_tools(HoverTool(
+        tooltips=[
+            ("Total Time", "@fixation_duration")
+        ], renderers=[bar]))
     return [fig2]
     
 def make_plot_3(src):
@@ -159,11 +163,15 @@ def make_plot_3(src):
         plot_width = 500,
         plot_height = 500
     )
-    fig3.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_3, color = "red", legend_label = "color")
+    bar = fig3.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_3, color = "red", legend_label = "color")
     fig3.xaxis.axis_label = 'City'
     fig3.yaxis.axis_label = 'Total Time'
     fig3.xaxis.major_label_orientation = pi/3
     fig3.xgrid.grid_line_color = None
+    fig3.add_tools(HoverTool(
+        tooltips=[
+            ("Total Time", "@fixation_duration")
+        ], renderers=[bar]))
     return [fig3]
 
 def make_plot_4(src):
@@ -174,11 +182,15 @@ def make_plot_4(src):
         plot_width = 500,
         plot_height = 500
     )
-    fig4.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_4, color = "blue", legend_label = "gray")
+    bar = fig4.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_4, color = "blue", legend_label = "gray")
     fig4.xaxis.axis_label = 'City'
     fig4.yaxis.axis_label = 'Total Time'
     fig4.xaxis.major_label_orientation = pi/3
     fig4.xgrid.grid_line_color = None
+    fig4.add_tools(HoverTool(
+        tooltips=[
+            ("Total Time", "@fixation_duration")
+        ], renderers=[bar]))
     return [fig4]
 
 #Update
