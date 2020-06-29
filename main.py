@@ -57,7 +57,7 @@ def allowed_file_PNG(filename):
 	
 @app.route('/')
 def upload_form():
-	image_list = [name for name in glob.glob('static/Metro-Maps/*[0-9]_*')]
+	image_list = [name for name in glob.glob('static/Metro-Maps/*.jpg')]
 	image_for_background = str(image_list[random.randint(0, len(image_list)-1)])
 	return render_template('index.html', image_for_background = image_for_background)
 
@@ -134,17 +134,19 @@ def Vis1(doc):
 			plot_height = print_height, 
 			x_range = (0, width), 
 			y_range = (height, 0),
+			x_axis_label = 'x-coordinate of fixation',
+			y_axis_label = 'y-coordinate of fixation'
 		)
 		image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
 		fig.add_glyph(src, image)
-		fig.line(x = 'x', y = 'y', source=src, width = 3)
+		fig.line(x = 'x', y = 'y', source=src, width = 3, 
+			color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Path')
 		fig.circle(
-			x='x',
-			y='y', 
-			size = 'fixation_duration', 
-			alpha = 0.5,
-			source = src
+			x='x', y='y', size = 'fixation_duration', 
+			alpha = 0.5, color = 'navy', muted_alpha = 0.1, 
+			legend_label = 'Disable/Enable Path', source = src
 		)
+		fig.legend.click_policy = 'mute'
 		return fig
 
 	def make_dataset():
@@ -192,16 +194,18 @@ def index_vis1():
 		# the redirect can be to the same route or somewhere else
 		return redirect(url_for('vispage1'))
 	# show the form, it wasn't submitted
-	with pull_session(url="http://localhost:5007/vis1") as session:
+	with pull_session(url="http://localhost:5008/vis1") as session:
 		vis_page = 'Scan Path'
-		vis_text = '''The concept of this graph is to show the user the difference between the scanpath of a colored graph and a noncolored graph. 
-			By default the colored image shows on screen and there are checkmarks that allow the user to select if they want to see just the colored scanpath, 
-			the black and white, both, or none, with a legend of course. The user can then change the maps as they please.'''
+		vis_text = '''The concept of this visualization is to show where a user looks, for how long, and at how many different locations they look.
+		The circles in the graph represent the duration of the fixation by the user, so the larger the circle, the longer the user looked at that point.
+		On the right of the graph there are two selector widgets, one for the map and one for the user. By selecting different entries,
+		you can see the different paths per map and per user. In the top right corner of the Scan-Path there is an interactive legend,
+		with which you can disable/enable the path to get a clearer look of the map.'''
 		script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
 def bk_worker_1():
-	server = Server({'/vis1': Vis1}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5007)
+	server = Server({'/vis1': Vis1}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5008)
 	server.start()
 	server.io_loop.start()
 
@@ -221,7 +225,8 @@ def index_vis2():
 			The user can see 3 individual graphs. The first graph shows the (x, y) position as the user scans the image. 
 			The second graph that the user can see is an (x, time) graph, where as time goes on, the x axis reflects the change in x position of the eyes, 
 			thile the y axis reflects the time spent. The thid graph is the opposite, ie the user sees the (time, y) graph. As time moves on the x-axis, 
-			the user sees how the y poition of the gazepath changes.'''
+			the user sees how the y poition of the gazepath changes. With the interactive legend in the top right corners, you can disable/enable the graph
+			to get a clearer view of the map itself.'''
 		script = server_session(session_id=session.id, url='http://localhost:5006/vis2')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
 
@@ -252,14 +257,16 @@ def Vis2(doc):
 		p1.xaxis.axis_label = 'X'
 		p1.yaxis.axis_label = 'Time'
 		p1.y_range.flipped = True
-		p1.line(x='x', y='timestamp', source = src, width = 3)
+		p1.line(x='x', y='timestamp', source = src, width = 3, color = 'navy')
+		p1.legend.click_policy = 'mute'
 
 		#Writing Y-path
 		p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (height, 0))
 		p2.grid.grid_line_alpha=0.3
 		p2.xaxis.axis_label = 'Time'
 		p2.yaxis.axis_label = 'Y'
-		p2.line(x='timestamp', y='y', source = src, width = 3)
+		p2.line(x='timestamp', y='y', source = src, width = 3, color = 'navy')
+		p2.legend.click_policy = 'mute'
 	
 		#writing general path
 		p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, width), y_range = (height, 0))
@@ -268,7 +275,8 @@ def Vis2(doc):
 		p3.add_glyph(src, image)
 		p3.xaxis.axis_label = 'X'
 		p3.yaxis.axis_label = 'Y'
-		p3.line(x='x', y='y', source = src, width = 3)
+		p3.line(x='x', y='y', source = src, width = 3, color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Graph')
+		p3.legend.click_policy = 'mute'
 		return [p1, p2, p3]
 
 	#Select
@@ -325,24 +333,30 @@ def bk_worker_2():
 
 Thread(target=bk_worker_2).start()
 
+@app.route('/reflection', methods = ['GET', 'POST'])
+def start_crying():
+    if request.method=='POST':
+        return redirect(url_for('vispage'))
+    vis_page = 'Our reflection on our project'
+    vis_text = 'Congratulations you found our little Easter egg. Out of all the letters in the title, you decided to click on the i. Turn up the volume, but not too loud, and press play to hear a reflection of our project.'
+    return render_template('project_reflection.html', vis_page = vis_page, vis_text = vis_text)
+
+
+
+
 @app.route('/vis3', methods=['GET', 'POST'])
 def index_vis3():
 	if request.method == 'POST':
 		return redirect(url_for('vispage'))
-	with pull_session(url="http://localhost:5008/vis3") as session:
+	with pull_session(url="http://localhost:5007/vis3") as session:
 		vis_page='Heat Map'
 		vis_text='''The idea behind Heat Map is that the user can see a heatmap of a specific user, map, and map color. 
 			It helps  the user understand the density of where the majority of the data is using a fun interactive colorcoding. 
 			All fixation points from each user fo a specific stimuli are added to the map.'# Depending on how many other dots are 
-			close to a dot, the dot\'s color changes from blue to red. The denser the dots, the redder the dots will appear. 
-			The user can select the image they want to analyse as well as a constant value \(p\). The closeness of a dot 
+			close to a dot, the dot\'s color changes from blue to red. The denser the dots, the more red the dots will appear.  The closeness of a dot 
 			is calculated by taking a dot on the screen and making a virtual circle around it. If another dot is in that circle, 
-			the closeness value is increased by 1 for both dots. The dots are put onto the graph with an evenly distributed color coding. 
-			The radius of the circle is dynamically changed with the input size of the width and height of the image, and a proportion of the image size constant. 
-			The user can self select the value of \(p\). The mathematical formula for the radius of the circle is \(\sqrt{w*h*p \over \pi}\), 
-			where \(w=width, h=height, p=\)\(wanted\;area\;of\;circle \over area\;of\;image\). If \(p=0.05\), then the area of the 
-			circle is \(5\%\) the area of the rectangle.'''
-		script = server_session(session_id=session.id, url="http://localhost:5008/vis3")
+			the closeness value is increased by 1 for both dots. '''
+		script = server_session(session_id=session.id, url="http://localhost:5007/vis3")
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
 def Vis3(doc):
@@ -418,23 +432,6 @@ def Vis3(doc):
 	stations = list(dict.fromkeys(stations))
 
 	selectStation = Select(title="Station:", value = '01_Antwerpen_S1.jpg', options=stations)
-	selectAlpha = Slider(title="Select the transparancy of the plotting", start=0, end=1, value=0.05, step=0.01)
-	selectSize = Slider(title="Select the size of the dots", start=0, end=50, value=0.1, step=1) 
-	selectClose = Slider(title="Select the closeness value", start=0, end=1, value=0.1, step=0.01) #p-value in the equation
-
-	callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose),
-						code="""
-		const data = source.data;
-		const alp_= alpha.value;
-		const dia = size.value;
-		const p_val = close.value;
-
-		source.change.emit();
-	""")
-
-	selectAlpha.js_on_change('value', callback)
-	selectSize.js_on_change('value', callback)
-	selectClose.js_on_change('value', callback)
 
 	#Update
 	def update():
@@ -463,13 +460,12 @@ def Vis3(doc):
 
 	widgets = column(selectStation)
 	plot = make_plot(src)
-	layout = row(plot, 
-				column( widgets, selectAlpha, selectSize, selectClose))
+	layout = row(plot, widgets)
 	update()
 	doc.add_root(layout)
 
 def bk_worker_3():
-	server = Server({'/vis3': Vis3}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5008)
+	server = Server({'/vis3': Vis3}, io_loop=IOLoop(), allow_websocket_origin=["127.0.0.1:8080"], port=5007)
 	server.start()
 	server.io_loop.start()
 

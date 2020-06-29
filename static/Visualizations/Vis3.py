@@ -97,23 +97,7 @@ for station in df_paths['StimuliName']:
 stations = list(dict.fromkeys(stations))
 
 selectStation = Select(title="Station:", value = '01_Antwerpen_S1.jpg', options=stations)
-selectAlpha = Slider(title="Select the transparancy of the plotting", start=0, end=1, value=0.05, step=0.01)
-selectSize = Slider(title="Select the size of the dots", start=0, end=50, value=0.1, step=1) 
-selectClose = Slider(title="Select the closeness value", start=0, end=1, value=0.1, step=0.01) #p-value in the equation
 
-callback = CustomJS(args=dict(source=src, alpha=selectAlpha, size=selectSize, close=selectClose),
-                    code="""
-    const data = source.data;
-    const alp_= alpha.value;
-    const dia = size.value;
-    const p_val = close.value;
-
-    source.change.emit();
-""")
-
-selectAlpha.js_on_change('value', callback)
-selectSize.js_on_change('value', callback)
-selectClose.js_on_change('value', callback)
 
 #Update
 def update():
@@ -142,7 +126,6 @@ print_height = int(720)
 
 widgets = column(selectStation)
 plot = make_plot(src)
-layout = row(plot, 
-             column( widgets, selectAlpha, selectSize, selectClose))
+layout = row(plot, widgets)
 update()
 curdoc().add_root(layout)

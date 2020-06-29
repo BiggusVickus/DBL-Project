@@ -14,6 +14,7 @@
 </nav>
 </head>
 <div class="sidenav">
+	<a href="{{ url_for('index_home') }}">Home</a>
 	<a href="{{ url_for('index_vis1') }}">Scan-Path</a>
 	<a href="{{ url_for('index_vis2') }}">Time Graph</a>
 	<a href="{{ url_for('index_vis3') }}">Heat Map</a>
@@ -24,7 +25,7 @@
 		<img class="center-fit" src="{{image_for_background}}" alt="{{image_for_background}}" style="width:100%"></img>
 
 		<div class="centered">
-			<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Tracking Visualization Tool</a></h1>
+			<h1><a href="{{ url_for('index_home') }}">Group 12BC Eye Track</a><a href="{{ url_for('start_crying') }}">i</a><a href="{{ url_for('index_home') }}">ng Visualization Tool</a></h1>
 			<p class='paragraph'>
 				Welcome to Group 12BC's visualization of metro map eye data visualization. We hope you will learn something new about your data. There are a few simple tools to help you get started. Click upload below to select and upload your data and images. From there you can go to either Visualization 1, 2, 3, or 4 to analyze and graph your data. Feel free to do what you like. Everytime you refresh this page, a new colored metromap is randomly selected to display in the background. 
 			</p>
