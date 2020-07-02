@@ -97,7 +97,8 @@ def Vis1(doc):
 	df_map = pd.read_csv('static/Visualizations/Uploads/fixation_data.csv', parse_dates=[0])
 
 	#create ColumnDataSource
-	src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
+	src = ColumnDataSource(data = dict(url=[], x=[], y=[], w=[], h=[], 
+		timestamp=[], station=[], user=[], fixation_duration=[]))
 
 	#Global variables
 	stations = []
@@ -132,12 +133,14 @@ def Vis1(doc):
 			title='Scanpath', 
 			plot_width = print_width, 
 			plot_height = print_height, 
-			x_range = (0, width), 
+			x_range = (0, 1900), 
 			y_range = (height, 0),
 			x_axis_label = 'x-coordinate of fixation',
 			y_axis_label = 'y-coordinate of fixation'
 		)
-		image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+		fig.xgrid.grid_line_color = None
+		fig.ygrid.grid_line_color = None
+		image = ImageURL(url = "url", x=0, y=0, w='w', h='h')
 		fig.add_glyph(src, image)
 		fig.line(x = 'x', y = 'y', source=src, width = 3, 
 			color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Path')
@@ -151,15 +154,26 @@ def Vis1(doc):
 
 	def make_dataset():
 		plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
+		
+		image = PIL.Image.open('static/Visualizations/Stimuli/'+select_city.value)
+		width, height = image.size
+		ratio = width/height
+		print_width = int(ratio * 720)
+		print_height = int(720)
+
+		plot_data['width'] = width
+		plot_data['height'] = height
 		return plot_data
 
 	def update():
 		new_src = make_dataset()
-		N = new_src.size//9
+		N = len(new_src.index)
 		src.data = dict(
 			url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
 			x=new_src['MappedFixationPointX'],
 			y=new_src['MappedFixationPointY'],
+			w=new_src['width'],
+			h=new_src['height'],
 			timestamp=new_src['Timestamp'],
 			station=new_src['StimuliName'],
 			user=new_src['user'],
@@ -247,31 +261,40 @@ def Vis2(doc):
 	#Choosing the data we want
 	def make_dataset():
 		plot_data = df_paths[(df_paths['StimuliName'] == selectStation.value) & (df_paths['user'] == selectUser.value)].copy()
+
+		image = PIL.Image.open('static/Visualizations/Stimuli/'+selectStation.value)
+		width, height = image.size
+		ratio = width/height
+		print_width = int(ratio * 360)
+		print_height = int(360)
+
+		plot_data['width'] = width
+		plot_data['height'] = height
 		return plot_data
 
 	#making the plot
 	def make_plot(src):
 		#Writing X-path
-		p1 = figure(title="X path", plot_width = print_width, plot_height = print_height, x_range = (0, width))
+		p1 = figure(title="X path", plot_width = print_width, plot_height = print_height, x_range = (0, 1900))
 		p1.grid.grid_line_alpha=0.3
 		p1.xaxis.axis_label = 'X'
 		p1.yaxis.axis_label = 'Time'
 		p1.y_range.flipped = True
 		p1.line(x='x', y='timestamp', source = src, width = 3, color = 'navy')
-		p1.legend.click_policy = 'mute'
+		#p1.legend.click_policy = 'mute'
 
 		#Writing Y-path
-		p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (height, 0))
+		p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (1200, 0))
 		p2.grid.grid_line_alpha=0.3
 		p2.xaxis.axis_label = 'Time'
 		p2.yaxis.axis_label = 'Y'
 		p2.line(x='timestamp', y='y', source = src, width = 3, color = 'navy')
-		p2.legend.click_policy = 'mute'
+		#p2.legend.click_policy = 'mute'
 	
 		#writing general path
-		p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, width), y_range = (height, 0))
+		p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, 1900), y_range = (1200, 0))
 		p3.grid.grid_line_alpha=0.3
-		image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+		image = ImageURL(url = "url", x=0, y=0, w='w', h='h')
 		p3.add_glyph(src, image)
 		p3.xaxis.axis_label = 'X'
 		p3.yaxis.axis_label = 'Y'
@@ -294,11 +317,13 @@ def Vis2(doc):
 	#Update
 	def update():
 		new_src = make_dataset()
-		N = new_src.size//9
+		N = len(new_src.index)
 		src.data = dict(
 			url = ["https://www.jelter.net/stimuli/"+selectStation.value]*N,
 			x=new_src['MappedFixationPointX'],
 			y=new_src['MappedFixationPointY'],
+			w=new_src['width'],
+			h=new_src['height'],
 			timestamp=new_src['Timestamp'],
 			station=new_src['StimuliName'],
 			user=new_src['user']
@@ -436,7 +461,7 @@ def Vis3(doc):
 	#Update
 	def update():
 		new_src = make_dataset()
-		N = new_src.size//9
+		N = len(new_src.index)
 		src.data = dict(
 			url = ["https://www.jelter.net/stimuli/" + selectStation.value]*N,
 			x=new_src['MappedFixationPointX'],
