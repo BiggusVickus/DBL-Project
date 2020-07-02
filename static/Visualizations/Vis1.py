@@ -18,7 +18,8 @@ import numpy as np
 df_map = pd.read_csv('Uploads/fixation_data.csv', parse_dates=[0])
 
 #create ColumnDataSource
-src = ColumnDataSource(data = dict(url=[], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
+src = ColumnDataSource(data = dict(url=[], x=[], y=[], w=[], h=[], print_w=[], print_h=[], 
+    timestamp=[], station=[], user=[], fixation_duration=[]))
 
 #Global variables
 stations = []
@@ -55,12 +56,14 @@ def make_plot(src):
         title='Scanpath', 
         plot_width = print_width, 
         plot_height = print_height, 
-        x_range = (0, width), 
+        x_range = (0, 1900), 
         y_range = (height, 0),
 		x_axis_label = 'x-coordinate of fixation',
-		y_axis_label = 'y-coordinate of fixation'
+		y_axis_label = 'y-coordinate of fixation',
     )
-    image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+    fig.xgrid.grid_line_color = None
+    fig.ygrid.grid_line_color = None
+    image = ImageURL(url = "url", x=0, y=0, w='w', h='h')
     fig.add_glyph(src, image)
     fig.line(x = 'x', y = 'y', source=src, width = 3, color = 'navy', 
         muted_alpha = 0.1, legend_label = 'Disable/Enable graph')
@@ -74,24 +77,35 @@ def make_plot(src):
 
 def make_dataset():
     plot_data = df_map[(df_map['StimuliName'] == select_city.value) & (df_map['user'] == select_user.value)].copy()
+
+    image = PIL.Image.open('Stimuli/'+select_city.value)
+    width, height = image.size
+    ratio = width/height
+    print_width = int(ratio * 720)
+    print_height = int(720)
+
+    plot_data['width'] = width
+    plot_data['height'] = height
+    plot_data['print_width'] = print_width
+    plot_data['print_height'] = print_height
     return plot_data
 
 def update():
     new_src = make_dataset()
-    N = new_src.size//9
+    N = len(new_src.index)
     src.data = dict(
         url = ["https://www.jelter.net/stimuli/"+select_city.value]*N,
         x=new_src['MappedFixationPointX'],
         y=new_src['MappedFixationPointY'],
+        w=new_src['width'],
+        h=new_src['height'],
+        print_w=new_src['print_width'],
+        print_h=new_src['print_height'],
         timestamp=new_src['Timestamp'],
         station=new_src['StimuliName'],
         user=new_src['user'],
         fixation_duration=(new_src['FixationDuration']/10)
     )
-
-#update graph on selected changes
-select_city.on_change('value', lambda attr, old, new: update())
-select_user.on_change('value', lambda attr, old, new: update())
 
 image = PIL.Image.open('Stimuli/'+select_city.value)
 width, height = image.size
@@ -99,6 +113,10 @@ ratio = width/height
 
 print_width = int(ratio * 720)
 print_height = int(720)
+
+#update graph on selected changes
+select_city.on_change('value', lambda attr, old, new: update())
+select_user.on_change('value', lambda attr, old, new: update())
 
 #make layout for the graph and selectors
 choices = column(select_city, select_user)
