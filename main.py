@@ -14,7 +14,7 @@ import seaborn as sns
 from bokeh.layouts import gridplot
 from bokeh.plotting import figure, output_file, show, curdoc
 from bokeh.io import output_file, show
-from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, Slider, Grid, LinearAxis, Plot
+from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, Slider, Grid, LinearAxis, Plot, HoverTool
 from bokeh.models import Range1d, ColorBar, LinearColorMapper, LogColorMapper, LogTicker, Div, Select, Slider, TextInput
 from bokeh.layouts import column, row, WidgetBox, layout
 from bokeh.models.callbacks import CustomJS
@@ -138,17 +138,18 @@ def Vis1(doc):
 			x_axis_label = 'x-coordinate of fixation',
 			y_axis_label = 'y-coordinate of fixation'
 		)
-		fig.xgrid.grid_line_color = None
-		fig.ygrid.grid_line_color = None
+		#fig.xgrid.grid_line_color = None
+		#fig.ygrid.grid_line_color = None
 		image = ImageURL(url = "url", x=0, y=0, w='w', h='h')
 		fig.add_glyph(src, image)
-		fig.line(x = 'x', y = 'y', source=src, width = 3, 
+		fig.line(x = 'x', y = 'y', source=src, line_width = 3, 
 			color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable Path')
 		fig.circle(
 			x='x', y='y', size = 'fixation_duration', 
 			alpha = 0.5, color = 'navy', muted_alpha = 0.1, 
 			legend_label = 'Disable/Enable Path', source = src
 		)
+		fig.add_tools(HoverTool(tooltips=[("Time spent (ms)", "@fixation_duration")]))
 		fig.legend.click_policy = 'mute'
 		return fig
 
@@ -215,7 +216,7 @@ def index_vis1():
 		On the right of the graph there are two selector widgets, one for the map and one for the user. By selecting different entries,
 		you can see the different paths per map and per user. In the top right corner of the Scan-Path there is an interactive legend,
 		with which you can disable/enable the path to get a clearer look of the map.'''
-		script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
+		script = server_session(session_id=session.id, url='http://localhost:5008/vis1')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
 def bk_worker_1():
@@ -294,13 +295,12 @@ def Vis2(doc):
 	
 		#writing general path
 		p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, 1900), y_range = (1200, 0))
-
 		p3.grid.grid_line_alpha=0.3
 		image = ImageURL(url = "url", x=0, y=0, w='w', h='h')
 		p3.add_glyph(src, image)
 		p3.xaxis.axis_label = 'X'
 		p3.yaxis.axis_label = 'Y'
-		p3.line(x='x', y='y', source = src, width = 3)
+		p3.line(x='x', y='y', source = src, width = 3, color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable graph')
 		p3.legend.click_policy = 'mute'
 		return [p1, p2, p3]
 
@@ -424,6 +424,13 @@ def Vis3(doc):
 							if ( (((xi2_val - xi_val)**2 + (yi2_val - yi_val)**2 )) < dia2 ) : #Checks if distance is 'close enough'.
 								closeness_val = closeness_val + 1 
 			plot_data.loc[index, 'closeness' ] = closeness_val #This line changes the actual row on the data frame  
+		image = PIL.Image.open('static/Visualizations/Stimuli/'+selectStation.value)
+		width, height = image.size
+		ratio = width/height
+		print_width = int(ratio * 360)
+		print_height = int(360)
+		plot_data['width'] = width
+		plot_data['height'] = height
 		return plot_data
 
 	#making the plot
@@ -431,15 +438,15 @@ def Vis3(doc):
 		p = figure(
 			plot_width = print_width,
 			plot_height = print_height,
-			x_range = (0, width), 
-			y_range = (height, 0), #y value is manipulated to have the correct coordinates.
+			x_range = (0, 1900), 
+			y_range = (1200, 0), #y value is manipulated to have the correct coordinates.
 									#in the dataset origin is treated to be the upper left corner. While graphing it is lower left. 
 									#Therefore we "flip" the y axis in the dataset.           
 			title = 'Heatmap',
 			x_axis_label = 'x coordinate',
 			y_axis_label = 'y coordinate'
 		)
-		image = ImageURL(url="url", x = 0 , y = 0, w = width, h = height)
+		image = ImageURL(url="url", x = 0 , y = 0, w = 'w', h = 'h')
 		#p.image_url(url = ["https://www.jelter.net/stimuli/" + selectStation.value], 
 		#            x = 0 , y = 0, w = width, h = height) #'../../' + 
 		p.add_glyph(src, image)
@@ -467,6 +474,8 @@ def Vis3(doc):
 			url = ["https://www.jelter.net/stimuli/" + selectStation.value]*N,
 			x=new_src['MappedFixationPointX'],
 			y=new_src['MappedFixationPointY'],
+			w=new_src['width'],
+			h=new_src['height'],
 			timestamp=new_src['Timestamp'],
 			station=new_src['StimuliName'],
 			user=new_src['user'],
@@ -751,11 +760,9 @@ def index_vis5():
 	if request.method == 'POST':
 		return redirect(url_for('vispage'))
 	with pull_session(url="http://localhost:5010/vis5") as session:
-		vis_page='Bar Chart'
-		vis_text='''The goal of this visualization is to show the user what the total time is that a certain stimuli is looked at. 
-			The user can see 4 different graphs. The first graph shows all the colored S1 maps, the second one shows the gray S1 maps, 
-			the third one shows all the colored S2 maps and the fourth one shows all the gray S2 maps. These different maps can be 
-			chosen on the right side of the graphs.'''
+		vis_page='Linked Visualizations'
+		vis_text='''On this page you see the first 3 visualizations on one page to be able to view the information provided by each simultaneously.
+			With the selectors on the right side you can switch between maps and users. The graphs will all update together, so you can compare between the visualizations.'''
 		script = server_session(session_id=session.id, url='http://localhost:5010/vis5')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text = vis_text)
 
@@ -772,7 +779,7 @@ def Vis5(doc):
 	#dia = (p_val * width * height) / (math.Pi)
 	dia2 = dia**2
 
-	src = ColumnDataSource(data = dict(url = [], x=[], y=[], timestamp=[], station=[], user=[], fixation_duration=[]))
+	src = ColumnDataSource(data = dict(url = [], x=[], y=[], w=[], h=[], timestamp=[], station=[], user=[], fixation_duration=[]))
 	src_heatmap = ColumnDataSource(data = dict(url = [], x=[], y=[], timestamp=[], station=[], user=[], closeness=[]))
 
 	#Select
@@ -789,6 +796,13 @@ def Vis5(doc):
 
 	def make_dataset():
 		plot_data = df_map[(df_map['StimuliName'] == selectStation.value) & (df_map['user'] == selectUser.value)].copy()
+		image = PIL.Image.open('static/Visualizations/Stimuli/'+selectStation.value)
+		width, height = image.size
+		ratio = width/height
+		print_width = int(ratio * 360)
+		print_height = int(360)
+		plot_data['width'] = width
+		plot_data['height'] = height
 		return plot_data
 
 	def make_dataset_heatmap():
@@ -811,70 +825,82 @@ def Vis5(doc):
 							if ( (((xi2_val - xi_val)**2 + (yi2_val - yi_val)**2 )) < dia2 ) : #Checks if distance is 'close enough'.
 								closeness_val = closeness_val + 1 
 			plot_data.loc[index, 'closeness' ] = closeness_val #This line changes the actual row on the data frame  
+		
+		image = PIL.Image.open('static/Visualizations/Stimuli/'+selectStation.value)
+		width, height = image.size
+		ratio = width/height
+		print_width = int(ratio * 360)
+		print_height = int(360)
+		plot_data['width'] = width
+		plot_data['height'] = height
 		return plot_data
 
 
 	def make_plot_1(src):
 		fig = figure(
 			title='Scanpath', 
-			plot_width = print_width, 
-			plot_height = print_height, 
-			x_range = (0, width), 
+			plot_width = print_width*2, 
+			plot_height = print_height*2, 
+			x_range = (0, 1900), 
 			y_range = (height, 0),
 			x_axis_label = 'x-coordinate of fixation',
 			y_axis_label = 'y-coordinate of fixation'
 		)
-		image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+		image = ImageURL(url = "url", x=0, y=0, w='w', h='h')
 		fig.add_glyph(src, image)
-		fig.line(x = 'x', y = 'y', source=src, line_width = 3)
+		fig.line(x = 'x', y = 'y', source=src, line_width = 3, color = 'navy',
+			muted_alpha = 0.1, legend_label = 'Disable/Enable graph')
 		fig.circle(
-			x='x',
-			y='y', 
+			x='x', y='y', 
 			size = 'fixation_duration', 
-			alpha = 0.5,
-			source = src
+			alpha = 0.5, muted_alpha = 0.1,
+			source = src, color = 'navy', 
+			legend_label = 'Disable/Enable graph'
 		)
+		fig.legend.click_policy = 'mute'
+		fig.add_tools(HoverTool(tooltips=[("Time spent (ms)", "@fixation_duration")]))
 		return fig
 
 	def make_plot_2(src):
 		#Writing X-path
-		p1 = figure(title="X path", plot_width = print_width, plot_height = print_height, x_range = (0, width))
+		p1 = figure(title="X path", plot_width = print_width, plot_height = print_height, x_range = (0, 1900))
 		p1.grid.grid_line_alpha=0.3
 		p1.xaxis.axis_label = 'X'
 		p1.yaxis.axis_label = 'Time'
 		p1.y_range.flipped = True
-		p1.line(x='x', y='timestamp', source = src, line_width = 3)
+		p1.line(x='x', y='timestamp', source = src, line_width = 3, color = 'navy')
 
 		#Writing Y-path
-		p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (height, 0))
+		p2 = figure(title= "Y path", plot_width = print_width, plot_height = print_height, y_range = (1200, 0))
 		p2.grid.grid_line_alpha=0.3
 		p2.xaxis.axis_label = 'Time'
 		p2.yaxis.axis_label = 'Y'
-		p2.line(x='timestamp', y='y', source = src, line_width = 3)
+		p2.line(x='timestamp', y='y', source = src, line_width = 3, color = 'navy')
 		
 		#writing general path
-		p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, width), y_range = (height, 0))
+		p3 = figure(title="General Path", plot_width = print_width, plot_height = print_height, x_range = (0, 1900), y_range = (1200, 0))
 		p3.grid.grid_line_alpha=0.3
-		image = ImageURL(url = "url", x=0, y=0, w=width, h=height)
+		image = ImageURL(url = "url", x=0, y=0, w='w', h='h')
 		p3.add_glyph(src, image)
 		p3.xaxis.axis_label = 'X'
 		p3.yaxis.axis_label = 'Y'
-		p3.line(x='x', y='y', source = src, line_width = 3)
+		p3.line(x='x', y='y', source = src, line_width = 3, color = 'navy', muted_alpha = 0.1, legend_label = 'Disable/Enable graph')
+		p3.legend.click_policy = 'mute'
 		return [p1, p2, p3]
 
 	def make_plot_3(src_heatmap):
 		p = figure(
-			plot_width = print_width,
-			plot_height = print_height,
-			x_range = (0, width), 
-			y_range = (height, 0), #y value is manipulated to have the correct coordinates.
+			plot_width = print_width*2,
+			plot_height = print_height*2,
+			x_range = (0, 1900), 
+			y_range = (1200, 0), #y value is manipulated to have the correct coordinates.
 									#in the dataset origin is treated to be the upper left corner. While graphing it is lower left. 
 									#Therefore we "flip" the y axis in the dataset.           
 			title = 'Heatmap',
 			x_axis_label = 'x coordinate',
 			y_axis_label = 'y coordinate'
 		)
-		image = ImageURL(url="url", x = 0 , y = 0, w = width, h = height)
+		image = ImageURL(url="url", x = 0 , y = 0, w = 'w', h = 'h')
 		#p.image_url(url = ["https://www.jelter.net/stimuli/" + selectStation.value], 
 		#            x = 0 , y = 0, w = width, h = height) #'../../' + 
 		p.add_glyph(src_heatmap, image)
@@ -891,12 +917,14 @@ def Vis5(doc):
 	def update():
 		new_src = make_dataset()
 		new_src_heatmap = make_dataset_heatmap()
-		N = new_src.size//8
-		N_heatmap = new_src_heatmap.size//9
+		N = len(new_src.index)
+		N_heatmap = len(new_src_heatmap.index)
 		src.data = dict(
 			url = ["https://www.jelter.net/stimuli/" + selectStation.value]*N,
 			x=new_src['MappedFixationPointX'],
 			y=new_src['MappedFixationPointY'],
+			w=new_src['width'],
+			h=new_src['height'],
 			timestamp=new_src['Timestamp'],
 			station=new_src['StimuliName'],
 			user=new_src['user'],
@@ -906,6 +934,8 @@ def Vis5(doc):
 			url = ["https://www.jelter.net/stimuli/" + selectStation.value]*N_heatmap,
 			x=new_src_heatmap['MappedFixationPointX'],
 			y=new_src_heatmap['MappedFixationPointY'],
+			w=new_src_heatmap['width'],
+			h=new_src_heatmap['height'],
 			timestamp=new_src_heatmap['Timestamp'],
 			station=new_src_heatmap['StimuliName'],
 			user=new_src_heatmap['user'],
@@ -920,8 +950,8 @@ def Vis5(doc):
 
 	ratio = width/height
 
-	print_width = int(ratio * 720)
-	print_height = int(720)
+	print_width = int(ratio * 360)
+	print_height = int(360)
 
 	widgets = column(selectStation, selectUser)
 	plot_1 = make_plot_1(src)
@@ -930,7 +960,8 @@ def Vis5(doc):
 	overlay = layout([
 					[plot_2[2], plot_2[1], widgets],
 					[plot_2[0]],
-					[plot_1, plot_3]])
+					[plot_1],
+					[plot_3]])
 	update()
 	doc.add_root(overlay)
 

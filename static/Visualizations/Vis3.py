@@ -63,6 +63,13 @@ def make_dataset():
                         if ( (((xi2_val - xi_val)**2 + (yi2_val - yi_val)**2 )) < dia2 ) : #Checks if distance is 'close enough'.
                             closeness_val = closeness_val + 1 
         plot_data.loc[index, 'closeness' ] = closeness_val #This line changes the actual row on the data frame  
+    image = PIL.Image.open('static/Visualizations/Stimuli/'+selectStation.value)
+    width, height = image.size
+    ratio = width/height
+    print_width = int(ratio * 360)
+    print_height = int(360)
+    plot_data['width'] = width
+    plot_data['height'] = height
     return plot_data
 
 #making the plot
@@ -70,15 +77,15 @@ def make_plot(src):
     p = figure(
         plot_width = print_width,
         plot_height = print_height,
-        x_range = (0, width), 
-        y_range = (height, 0), #y value is manipulated to have the correct coordinates.
+        x_range = (0, 1900), 
+        y_range = (1200, 0), #y value is manipulated to have the correct coordinates.
                                 #in the dataset origin is treated to be the upper left corner. While graphing it is lower left. 
                                 #Therefore we "flip" the y axis in the dataset.           
         title = 'Heatmap',
         x_axis_label = 'x coordinate',
         y_axis_label = 'y coordinate'
     )
-    image = ImageURL(url="url", x = 0 , y = 0, w = width, h = height)
+    image = ImageURL(url="url", x = 0 , y = 0, w = 'w', h = 'h')
     #p.image_url(url = ["https://www.jelter.net/stimuli/" + selectStation.value], 
     #            x = 0 , y = 0, w = width, h = height) #'../../' + 
     p.add_glyph(src, image)
@@ -107,6 +114,8 @@ def update():
         url = ["https://www.jelter.net/stimuli/" + selectStation.value]*N,
         x=new_src['MappedFixationPointX'],
         y=new_src['MappedFixationPointY'],
+        w=new_src['width'],
+        h=new_src['height'],
         timestamp=new_src['Timestamp'],
         station=new_src['StimuliName'],
         user=new_src['user'],
