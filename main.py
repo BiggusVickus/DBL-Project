@@ -14,7 +14,7 @@ import seaborn as sns
 from bokeh.layouts import gridplot
 from bokeh.plotting import figure, output_file, show, curdoc
 from bokeh.io import output_file, show
-from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, Slider, Grid, LinearAxis, Plot
+from bokeh.models import ColumnDataSource, Select, Tabs, Panel, Button, ImageURL, Slider, Grid, LinearAxis, Plot, HoverTool
 from bokeh.models import Range1d, ColorBar, LinearColorMapper, LogColorMapper, LogTicker, Div, Select, Slider, TextInput
 from bokeh.layouts import column, row, WidgetBox, layout
 from bokeh.models.callbacks import CustomJS
@@ -201,7 +201,7 @@ def index_vis1():
 		On the right of the graph there are two selector widgets, one for the map and one for the user. By selecting different entries,
 		you can see the different paths per map and per user. In the top right corner of the Scan-Path there is an interactive legend,
 		with which you can disable/enable the path to get a clearer look of the map.'''
-		script = server_session(session_id=session.id, url='http://localhost:5007/vis1')
+		script = server_session(session_id=session.id, url='http://localhost:5008/vis1')
 		return render_template('vispage.html', script=script, vis_page = vis_page, vis_text=vis_text)
 
 def bk_worker_1():
@@ -608,6 +608,9 @@ def Vis4(doc):
 		fig1.yaxis.axis_label = 'Total Time'
 		fig1.xaxis.major_label_orientation = pi/3
 		fig1.xgrid.grid_line_color = None
+		tooltips = [("Total Time", "@fixation_duration")]
+		hovertool = HoverTool(tooltips=tooltips, attachment='below')
+		fig1.add_tools(hovertool)
 		return [fig1]
 
 	def make_plot_2(src):
@@ -618,11 +621,15 @@ def Vis4(doc):
 			plot_width = 500,
 			plot_height = 500
 		)
-		fig2.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_2, color = "blue", legend_label = "gray")
+		bar = fig2.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_2, color = "blue", legend_label = "gray")
 		fig2.xaxis.axis_label = 'City'
 		fig2.yaxis.axis_label = 'Total Time'
 		fig2.xaxis.major_label_orientation = pi/3
 		fig2.xgrid.grid_line_color = None
+		fig2.add_tools(HoverTool(
+        	tooltips=[
+            	("Total Time", "@fixation_duration")
+        	], renderers=[bar]))
 		return [fig2]
 		
 	def make_plot_3(src):
@@ -633,11 +640,15 @@ def Vis4(doc):
 			plot_width = 500,
 			plot_height = 500
 		)
-		fig3.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_3, color = "red", legend_label = "color")
+		bar = fig3.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_3, color = "red", legend_label = "color")
 		fig3.xaxis.axis_label = 'City'
 		fig3.yaxis.axis_label = 'Total Time'
 		fig3.xaxis.major_label_orientation = pi/3
 		fig3.xgrid.grid_line_color = None
+		fig3.add_tools(HoverTool(
+        	tooltips=[
+            	("Total Time", "@fixation_duration")
+        	], renderers=[bar]))
 		return [fig3]
 
 	def make_plot_4(src):
@@ -648,11 +659,15 @@ def Vis4(doc):
 			plot_width = 500,
 			plot_height = 500
 		)
-		fig4.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_4, color = "blue", legend_label = "gray")
+		bar = fig4.vbar(x='x', top = 'fixation_duration', width = 0.5, source = source_city_4, color = "blue", legend_label = "gray")
 		fig4.xaxis.axis_label = 'City'
 		fig4.yaxis.axis_label = 'Total Time'
 		fig4.xaxis.major_label_orientation = pi/3
 		fig4.xgrid.grid_line_color = None
+		fig4.add_tools(HoverTool(
+        	tooltips=[
+            	("Total Time", "@fixation_duration")
+        	], renderers=[bar]))
 		return [fig4]
 
 	#Update
